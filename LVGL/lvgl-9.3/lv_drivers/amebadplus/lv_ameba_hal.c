@@ -27,10 +27,8 @@ uint32_t custom_tick_get(void)
     return rtos_time_get_current_system_time_ms();
 }
 
-void lv_hal_init(void)
+void lv_ameba_hal_init(void)
 {
-    lv_init();
-
     lv_tick_set_cb(custom_tick_get);
 
     display_init();

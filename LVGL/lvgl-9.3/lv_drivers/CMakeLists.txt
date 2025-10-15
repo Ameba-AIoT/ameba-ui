@@ -39,14 +39,19 @@ set(private_compile_options)         #private compile_options
 # Component private part, user config begin
 
 ameba_list_append(private_sources
-    ${c_SOC_TYPE}/jpeg_decoder.c
     ${c_SOC_TYPE}/display.c
     ${c_SOC_TYPE}/lv_ameba_hal.c
 )
 
+if(CONFIG_AMEBAGREEN2)
+ameba_list_append(private_sources
+    ${c_SOC_TYPE}/jpeg_decoder.c
+)
+endif()
+
 if(CONFIG_AMEBASMART OR CONFIG_AMEBASMARTPLUS)
 ameba_list_append(private_sources
-    ${c_SOC_TYPE}/src/touch.c
+    ${c_SOC_TYPE}/touch.c
 )
 endif()
 
