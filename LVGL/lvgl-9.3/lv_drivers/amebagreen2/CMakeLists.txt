@@ -9,7 +9,7 @@ set(public_libraries)               #public libraries(files), NOTE: linked with 
 #----------------------------------------#
 # Component public part, user config begin
 ameba_list_append(public_includes
-    ../lv_drivers/include
+    ../include
 )
 
 # Component public part, user config end
@@ -43,6 +43,7 @@ ameba_list_append(private_sources
     lcdc.c
     jpeg_decoder.c
     lv_ameba_hal.c
+    lv_draw_ppe.c
 )
 
 ameba_list_append(private_compile_options

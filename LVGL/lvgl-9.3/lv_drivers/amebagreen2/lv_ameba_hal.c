@@ -18,10 +18,12 @@
 #include "lvgl.h"
 #include "display.h"
 #include "jpeg_decoder.h"
+#include "lv_draw_ppe.h"
 
 #include "lv_ameba_hal.h"
 
-#define RTK_HW_JPEG_DECODE 0
+#define RTK_HW_JPEG_DECODE 1
+#define RTK_HW_PPE_ENABLE 1
 
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 480
@@ -33,6 +35,10 @@ uint32_t ameba_tick_get(void) {
 void lv_ameba_hal_init(void) {
 #if RTK_HW_JPEG_DECODE
     lv_ameba_jpeg_init();
+#endif
+
+#if RTK_HW_PPE_ENABLE
+    lv_draw_ppe_init();
 #endif
 
     lv_tick_set_cb(ameba_tick_get);
