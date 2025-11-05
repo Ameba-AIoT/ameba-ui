@@ -3,7 +3,7 @@
 
 #include "lvgl.h"
 #include "lv_ameba_hal.h"
-#include "lv_demo_widgets.h"
+#include "demos/lv_demos.h"
 
 #define LOG_TAG "LV-Demos"
 
@@ -16,7 +16,18 @@ void lv_demos_task(void *param) {
     lv_ameba_hal_init();
 
     /*Open a demo or an example*/
+#if defined(CONFIG_LV_DEMO_WIDGETS)
     lv_demo_widgets();
+#endif
+#if defined(CONFIG_LV_DEMO_STRESS)
+    lv_demo_stress();
+#endif
+#if defined(CONFIG_LV_DEMO_MUSIC)
+    lv_demo_music();
+#endif
+#if defined(CONFIG_LV_DEMO_BENCHMARK)
+    lv_demo_benchmark();
+#endif
 
     /* To hide the memory and performance indicators in the corners
      * disable `LV_USE_MEM_MONITOR` and `LV_USE_PERF_MONITOR` in `lv_conf.h`*/

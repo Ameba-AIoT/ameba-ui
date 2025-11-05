@@ -25,4 +25,33 @@ menu "Graphics Library Selection"
                     Use latest LVGL 9.3 with new features and optimizations.
         endchoice
     endif
+
+    if LVGL_9_3
+        choice
+            prompt "LVGL Demos"
+            default LV_DEMO_WIDGETS
+            help
+                Select the demo for LVGL
+
+            config LV_DEMO_WIDGETS
+                bool "lv demo widgets"
+                help
+                    Show some widget.
+
+            config LV_DEMO_STRESS
+                bool "lv demo stress"
+                help
+                    Stress test for LVGL
+
+            config LV_DEMO_MUSIC
+                bool "lv demo music"
+                help
+                    Music player demo
+
+            config LV_DEMO_BENCHMARK
+                bool "lv demo benchmark"
+                help
+                    Benchmark your system
+        endchoice
+    endif
 endmenu

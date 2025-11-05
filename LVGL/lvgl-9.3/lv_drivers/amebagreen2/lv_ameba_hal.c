@@ -24,15 +24,22 @@
 
 #define RTK_HW_JPEG_DECODE 1
 #define RTK_HW_PPE_ENABLE 1
+#define RTK_ROMFS_ENABLE 1
 
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 480
+
+extern void lv_fs_romfs_init(void);
 
 uint32_t ameba_tick_get(void) {
     return rtos_time_get_current_system_time_ms();
 }
 
 void lv_ameba_hal_init(void) {
+#if RTK_ROMFS_ENABLE
+    lv_fs_romfs_init();
+#endif
+
 #if RTK_HW_JPEG_DECODE
     lv_ameba_jpeg_init();
 #endif
