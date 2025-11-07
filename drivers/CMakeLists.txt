@@ -46,7 +46,7 @@ set(driver_list)
 
 if(CONFIG_AMEBALITE)
     ameba_list_append(driver_list st7789v)
-elseif(CONFIG_AMEBASMART OR CONFIG_AMEBASMARTPLUS)
+elseif(CONFIG_AMEBASMART)
     ameba_list_append(driver_list cst328)
     ameba_list_append(driver_list st7701s)
 elseif(CONFIG_AMEBADPLUS)
