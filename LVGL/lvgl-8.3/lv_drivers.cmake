@@ -43,7 +43,7 @@ ameba_list_append(private_sources
     lv_drivers/${c_SOC_TYPE}/src/display.c
     lv_drivers/${c_SOC_TYPE}/src/lv_hal.c
 )
-if(CONFIG_AMEBASMART OR CONFIG_AMEBASMARTPLUS)
+if(CONFIG_AMEBASMART)
     ameba_list_append(private_sources
         lv_drivers/${c_SOC_TYPE}/src/touch.c
     )
