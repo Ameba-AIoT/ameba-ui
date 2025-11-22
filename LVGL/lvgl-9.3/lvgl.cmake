@@ -70,6 +70,7 @@ ameba_list_append(private_sources
 ameba_list_append(private_includes
     port/${c_SOC_TYPE}
     ${c_CMPT_UI_DIR}/third_party/libjpeg-turbo
+    ${c_CMPT_UI_DIR}/third_party/libpng
 )
 
 ameba_list_append(private_definitions

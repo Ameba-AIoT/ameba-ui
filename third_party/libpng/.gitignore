@@ -58,7 +58,7 @@
 /libpng16.pc
 /libtool
 /stamp-h1
-pnglibconf.[ch]
+pnglibconf.c
 pnglibconf.dfn
 pnglibconf.pre
 pngprefix.h
