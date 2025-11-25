@@ -1,8 +1,0 @@
-[submodule "LVGL/lvgl-9.3/lvgl"]
-	path = LVGL/lvgl-9.3/lvgl
-	url = https://github.com/lvgl/lvgl.git
-	branch = release/v9.3
-[submodule "LVGL/lvgl-8.3/lvgl"]
-	path = LVGL/lvgl-8.3/lvgl
-	url = https://github.com/lvgl/lvgl.git
-	branch = release/v8.3
