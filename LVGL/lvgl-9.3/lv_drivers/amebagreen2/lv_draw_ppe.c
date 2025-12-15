@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 
-#include "lvgl.h"
-#include "ameba_ppe.h"
+#include "ameba_soc.h"
 #include "os_wrapper.h"
+#include "ameba_ppe.h"
 
+#include "lvgl.h"
 #include "lv_draw_ppe.h"
 
 #include "src/misc/lv_types.h"
@@ -36,7 +37,6 @@
 #endif
 
 #define LV_USE_PPE_THREAD           1
-#define LV_DRAW_BUF_PXP_SIZE        4096
 
 #define TIME_DEBUG                  0
 #define PPE_DEBUG                   0
@@ -56,6 +56,7 @@ typedef struct {
     bool inited;
 #endif
     rtos_sema_t ppe_sema;
+    rtos_sema_t trans_sema;
 } lv_draw_ppe_unit_t;
 
 static lv_draw_ppe_unit_t *g_ppe_ctx = NULL;
@@ -71,8 +72,6 @@ static void _ppe_render_thread_cb(void *param);
 static void PPE_INTHandler_display(void)
 {
     uint32_t irq_status = PPE_GetAllIntStatus();
-    PPE_ResultLayer_InitTypeDef PPE_Result_Layer;
-    PPE_ResultLayer_StructInit(&PPE_Result_Layer);
 
     if (irq_status & PPE_BIT_INTR_ST_ALL_OVER) {
         PPE_ClearINTPendingBit(PPE_BIT_INTR_ST_ALL_OVER);
@@ -92,7 +91,8 @@ void lv_draw_ppe_init(void)
 
     RCC_PeriphClockCmd(APBPeriph_PPE, APBPeriph_PPE_CLOCK, ENABLE);
     rtos_sema_create(&g_ppe_ctx->ppe_sema, 0, RTOS_SEMA_MAX_COUNT);
-
+    rtos_sema_create(&g_ppe_ctx->trans_sema, 0, RTOS_SEMA_MAX_COUNT);
+    rtos_sema_give(g_ppe_ctx->trans_sema);
 #if LV_USE_PPE_THREAD
     lv_thread_init(&draw_ppe_unit->thread, "ppdraw", LV_THREAD_PRIO_HIGH,
                 _ppe_render_thread_cb, 8 * 1024, draw_ppe_unit);
@@ -290,13 +290,7 @@ static int _ppe_get_px_format(lv_color_format_t cf)
 
 static int _ppe_get_px_bytes(lv_color_format_t cf)
 {
-    switch(cf) {
-        case LV_COLOR_FORMAT_RGB565:   return 2;
-        case LV_COLOR_FORMAT_RGB888:   return 3;
-        case LV_COLOR_FORMAT_XRGB8888:
-        case LV_COLOR_FORMAT_ARGB8888: return 4;
-        default: return PPE_ARGB8888;
-    }
+    return lv_color_format_get_bpp(cf) / 8;
 }
 
 static void _ppe_draw_fill(lv_draw_task_t *t)
@@ -318,8 +312,7 @@ static void _ppe_draw_fill(lv_draw_task_t *t)
     lv_draw_ppe_header_t src_header = {0};
     lv_draw_ppe_header_t dest_header = {0};
     lv_draw_ppe_configuration_t ppe_draw_conf = {0};
-    lv_area_t buf_area = layer->buf_area;
-    lv_area_move(&draw_area, -buf_area.x1, -buf_area.y1);
+
     uint32_t fill_width = lv_area_get_width(&draw_area);
     uint32_t fill_height = lv_area_get_height(&draw_area);
     lv_color32_t col32 = lv_color_to_32(dsc->color, dsc->opa);
@@ -411,8 +404,8 @@ static void _ppe_img_draw_core(lv_draw_task_t *t,
     float scale_y = 1.0f;
 
     if (draw_dsc->scale_x != LV_SCALE_NONE || draw_dsc->scale_y != LV_SCALE_NONE) {
-        scale_x = 1.0f * (draw_dsc->scale_x/16*16) / LV_SCALE_NONE;
-        scale_y = 1.0f * (draw_dsc->scale_y/16*16) / LV_SCALE_NONE;
+        scale_x = 1.0f * 65536 / (uint32_t)(65536 / draw_dsc->scale_x) / LV_SCALE_NONE;
+        scale_y = 1.0f * 65536 / (uint32_t)(65536 / draw_dsc->scale_y) / LV_SCALE_NONE;
         scale_width = img_width * scale_x;
         scale_height = img_height * scale_y;
     }
@@ -454,13 +447,13 @@ static void _ppe_img_draw_core(lv_draw_task_t *t,
     ppe_draw_conf.scale_x = scale_x;
     ppe_draw_conf.scale_y = scale_y;
     ppe_draw_conf.angle = draw_dsc->rotation / 10;
-    ppe_draw_conf.opa = (img_cf == LV_COLOR_FORMAT_ARGB8888 && !layer->all_tasks_added) ? LV_OPA_TRANSP : LV_OPA_COVER;
+    ppe_draw_conf.opa = (lv_color_format_has_alpha(img_cf) && !layer->all_tasks_added) ? LV_OPA_TRANSP : LV_OPA_COVER;
     lv_draw_ppe_configure_and_start_transfer(&ppe_draw_conf);
 
 #if TIME_DEBUG
     end = rtos_time_get_current_system_time_ns();
     time_used = end - start;
-    RTK_LOGI(LOG_TAG, "PPE Imag (%-3ld %-3ld %-3lu %-3lu)Time:%8lld, cf:%lu-%d offset:%lu, layer:%d\n", 
+    RTK_LOGI(LOG_TAG, "PPE Imag (%-3ld %-3ld %-3lu %-3lu) Time:%8lld, cf:%lu-%d offset:%lu, layer:%d\n",
         layer->buf_area.x1, layer->buf_area.y1, target_width, target_height,
         time_used, img_cf, layer->all_tasks_added, dest_offset, (int)draw_dsc->base.user_data);
 #endif
@@ -528,7 +521,7 @@ static void _ppe_draw_line(lv_draw_task_t *t)
     ppe_draw_conf.scale_x = 1.0f;
     ppe_draw_conf.scale_y = 1.0f;
     ppe_draw_conf.angle = 0;
-    ppe_draw_conf.opa = LV_OPA_COVER;
+    ppe_draw_conf.opa = dsc->opa;
     lv_draw_ppe_configure_and_start_transfer(&ppe_draw_conf);
 
 #if TIME_DEBUG
@@ -599,6 +592,7 @@ static void _ppe_draw_mask_rect(lv_draw_task_t *t)
 }
 
 void lv_draw_ppe_configure_and_start_transfer(lv_draw_ppe_configuration_t *ppe_draw_conf) {
+    rtos_sema_take(g_ppe_ctx->trans_sema, RTOS_MAX_TIMEOUT);
     uint8_t input_layer_id = PPE_INPUT_LAYER1_INDEX;
     PPE_InputLayer_InitTypeDef Input_Layer;
     PPE_InputLayer_StructInit(&Input_Layer);
@@ -620,7 +614,7 @@ void lv_draw_ppe_configure_and_start_transfer(lv_draw_ppe_configuration_t *ppe_d
     Input_Layer.scale_x        = ppe_draw_conf->scale_x;
     Input_Layer.scale_y        = ppe_draw_conf->scale_y;
     // Layer2 and layer3 can't support rotation
-    if (ppe_draw_conf->angle && ppe_draw_conf->src_header->cf != LV_COLOR_FORMAT_ARGB8888) {
+    if (ppe_draw_conf->angle && !lv_color_format_has_alpha(ppe_draw_conf->src_header->cf)) {
         Input_Layer.angle = ppe_draw_conf->angle;
         if (ppe_draw_conf->angle == 90 || ppe_draw_conf->angle == 270) {
             Input_Layer.win_max_x = ppe_draw_conf->src_header->h;
@@ -656,7 +650,7 @@ void lv_draw_ppe_configure_and_start_transfer(lv_draw_ppe_configuration_t *ppe_d
     PPE_InitInputLayer(input_layer_id, &Input_Layer);
     PPE_ResultLayer_InitTypeDef Result_Layer;
     PPE_ResultLayer_StructInit(&Result_Layer);
-    Result_Layer.src_addr       = (uint32_t)ppe_draw_conf->dest_buf;;
+    Result_Layer.src_addr       = (uint32_t)ppe_draw_conf->dest_buf;
     Result_Layer.pic_width      = ppe_draw_conf->dest_header->w;
     Result_Layer.pic_height     = ppe_draw_conf->dest_header->h;
     Result_Layer.format         = _ppe_get_px_format(ppe_draw_conf->dest_header->cf);
@@ -679,6 +673,7 @@ void lv_draw_ppe_configure_and_start_transfer(lv_draw_ppe_configuration_t *ppe_d
     PPE_MaskINTConfig(PPE_BIT_INTR_ST_ALL_OVER, ENABLE);
     PPE_Cmd(ENABLE);
     rtos_sema_take(g_ppe_ctx->ppe_sema, RTOS_MAX_TIMEOUT);
+    rtos_sema_give(g_ppe_ctx->trans_sema);
 }
 
 static void _ppe_execute_drawing(lv_draw_ppe_unit_t *u)
