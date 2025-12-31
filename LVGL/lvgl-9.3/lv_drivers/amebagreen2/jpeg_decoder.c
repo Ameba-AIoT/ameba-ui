@@ -103,12 +103,23 @@ static lv_color_format_t trans_format_hw2sw(int format)
     /* Refer to: jpeg_decoder/inc/jpegdecapi.h */
 
     switch (format) {
-    case JPEGDEC_YCbCr420_SEMIPLANAR: // decode param
+    case JPEGDEC_YCbCr400:
+        return LV_COLOR_FORMAT_I400;
+
+    case JPEGDEC_YCbCr420_SEMIPLANAR:
         return LV_COLOR_FORMAT_I420;
 
-    case JPEGDEC_YCbCr422_SEMIPLANAR: // decode param
+    case JPEGDEC_YCbCr422_SEMIPLANAR:
         return LV_COLOR_FORMAT_I422;
 
+    case JPEGDEC_YCbCr440:
+        return LV_COLOR_FORMAT_NV12;  // For YCbCr440
+
+    case JPEGDEC_YCbCr411_SEMIPLANAR:
+        return LV_COLOR_FORMAT_NV21;  // For YCbCr411
+
+    case JPEGDEC_YCbCr444_SEMIPLANAR:
+        return LV_COLOR_FORMAT_I444;
     default:
     }
 
@@ -121,10 +132,22 @@ static int trans_format_sw2hw(lv_color_format_t format)
     /* Refer to: jpeg_decoder/inc/ppapi.h */
     switch (format) {
     case LV_COLOR_FORMAT_I420:
-        return PP_PIX_FMT_YCBCR_4_2_0_SEMIPLANAR; // pp param
+        return PP_PIX_FMT_YCBCR_4_2_0_SEMIPLANAR;
 
     case LV_COLOR_FORMAT_I422:
-        return PP_PIX_FMT_YCBCR_4_2_2_SEMIPLANAR; // pp param
+        return PP_PIX_FMT_YCBCR_4_2_2_SEMIPLANAR;
+
+    case LV_COLOR_FORMAT_I400:
+        return PP_PIX_FMT_YCBCR_4_0_0;
+
+    case LV_COLOR_FORMAT_I444:
+        return PP_PIX_FMT_YCBCR_4_4_4_SEMIPLANAR;
+
+    case LV_COLOR_FORMAT_NV21:
+        return PP_PIX_FMT_YCBCR_4_1_1_SEMIPLANAR;
+
+    case LV_COLOR_FORMAT_NV12:
+        return PP_PIX_FMT_YCBCR_4_4_0;
 
     default:
     }
@@ -172,14 +195,7 @@ static lv_result_t decoder_info_cb(lv_image_decoder_t *decoder, lv_image_decoder
     uint8_t *data = NULL;
     lv_result_t res = LV_RESULT_INVALID;
 
-#if TIME_DEBUG
-    uint64_t start, end;
-    uint64_t time_used;
-    start = rtos_time_get_current_system_time_ns();
-#endif
-
     if (src_type == LV_IMAGE_SRC_FILE) {
-
         uint32_t data_size;
         data = read_file((const char *)dsc->src, &data_size);
         if (data == NULL) {
@@ -207,20 +223,18 @@ static lv_result_t decoder_info_cb(lv_image_decoder_t *decoder, lv_image_decoder
     } else {
         return LV_RESULT_INVALID;
     }
+#if TIME_DEBUG
+    uint64_t start, end;
+    uint64_t time_used;
+    start = rtos_time_get_current_system_time_ns();
+#endif
 
     JpegDecInst jpeg_inst;
-    PPInst pp_inst;
 
     if (JpegDecInit(&jpeg_inst) != JPEGDEC_OK) {
         printf("Error: JpegDecInit Failed.\n");
         res = LV_RESULT_INVALID;
         goto end;
-    }
-
-    if (PPInit(&pp_inst) != PP_OK) {
-        printf("Error: PPInit Failed.\n");
-        res = LV_RESULT_INVALID;
-        goto end1;
     }
 
     if (JpegDecGetImageInfo(jpeg_inst, &jpeg_in, &image_info) == JPEGDEC_OK) {
@@ -236,10 +250,6 @@ static lv_result_t decoder_info_cb(lv_image_decoder_t *decoder, lv_image_decoder
     printf("Decode info Time used: %lld ns\n", time_used);
 #endif
 
-    if (pp_inst) {
-        PPRelease(pp_inst);
-    }
-end1:
     if (jpeg_inst) {
         JpegDecRelease(jpeg_inst);
     }
@@ -248,6 +258,11 @@ end:
         lv_free(data);
     }
 
+#if TIME_DEBUG
+    end = rtos_time_get_current_system_time_ns();
+    time_used = end - start;
+    printf("Get Info used: %lld ns\n", time_used);
+#endif
     return res;
 }
 
@@ -259,12 +274,6 @@ static lv_result_t decoder_open_cb(lv_image_decoder_t *decoder, lv_image_decoder
     uint8_t *data = NULL;
     uint32_t jpeg_data_len = 0;
 
-#if TIME_DEBUG
-    uint64_t start, end;
-    uint64_t time_used;
-    start = rtos_time_get_current_system_time_ns();
-#endif
-
     if (dsc->src_type == LV_IMAGE_SRC_FILE) {
 
         data = read_file(dsc->src, &jpeg_data_len);
@@ -274,7 +283,7 @@ static lv_result_t decoder_open_cb(lv_image_decoder_t *decoder, lv_image_decoder
         }
 
         jpeg_data_ptr = data;
-        DCache_Clean((u32)jpeg_data_ptr, jpeg_data_len);
+        //DCache_Clean((uint32_t)jpeg_data_ptr, jpeg_data_len); // Clean before JpegDecDecode
 
     } else if (dsc->src_type == LV_IMAGE_SRC_VARIABLE) {
         const lv_image_dsc_t *img_dsc = dsc->src;
@@ -283,6 +292,11 @@ static lv_result_t decoder_open_cb(lv_image_decoder_t *decoder, lv_image_decoder
     } else {
         return LV_RESULT_INVALID;
     }
+#if TIME_DEBUG
+    uint64_t start, end;
+    uint64_t time_used;
+    start = rtos_time_get_current_system_time_ns();
+#endif
 
     lv_result_t res = LV_RESULT_INVALID;
 
@@ -346,8 +360,8 @@ static lv_result_t decoder_open_cb(lv_image_decoder_t *decoder, lv_image_decoder
     }
     pp_conf.ppOutImg.bufferBusAddr = (u32)decoded_buf->data;
 
-    DCache_CleanInvalidate(pp_conf.ppOutImg.bufferBusAddr, dsc->header.w * dsc->header.h * LV_COLOR_DEPTH / 8);
-
+    //DCache_CleanInvalidate(pp_conf.ppOutImg.bufferBusAddr, dsc->header.w * dsc->header.h * LV_COLOR_DEPTH / 8);
+    DCache_CleanInvalidate(0xFFFFFFFF, 0xFFFFFFFF); // Clean !!!!
     if (PPSetConfig(pp_inst, &pp_conf) != PP_OK) {
         printf("Error: PPSetConfig Failed.\n");
         goto end3;
@@ -358,13 +372,6 @@ static lv_result_t decoder_open_cb(lv_image_decoder_t *decoder, lv_image_decoder
         dsc->decoded = decoded_buf;
         res = LV_RESULT_OK;
     }
-
-#if TIME_DEBUG
-    end = rtos_time_get_current_system_time_ns();
-    time_used = end - start;
-    printf("Decode open Time used: %lld ns\n", time_used);
-#endif
-
 end3:
     if (pp_inst) {
         PPDecCombinedModeDisable(pp_inst, jpeg_inst);
@@ -385,6 +392,12 @@ end:
         printf("Decode open flow failed and release decoded_buf.\n");
         lv_draw_buf_destroy(decoded_buf);
     }
+#if TIME_DEBUG
+    end = rtos_time_get_current_system_time_ns();
+    time_used = end - start;
+    printf("Decode Time used: %lld ns\n", time_used);
+#endif
+
     return res;
 }
 
