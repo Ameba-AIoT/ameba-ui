@@ -8,9 +8,12 @@ set(public_libraries)               #public libraries(files), NOTE: linked with 
 
 #----------------------------------------#
 # Component public part, user config begin
+
 ameba_list_append(public_includes
-    ../include
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+# You may use if-else condition to set or update predefined variable above
 
 # Component public part, user config end
 #----------------------------------------#
@@ -39,18 +42,7 @@ set(private_compile_options)         #private compile_options
 # Component private part, user config begin
 
 ameba_list_append(private_sources
-    jpeg_decoder.c
-    lv_draw_ppe.c
-)
-
-ameba_list_append(private_compile_options
-    -Wno-incompatible-pointer-types
-)
-
-ameba_list_append(private_includes
-    ../include
-    ../../lvgl
-    ${c_CMPT_FWLIB_DIR}/jpeg_decoder/inc
+    ft6336u.c
 )
 
 # Component private part, user config end
@@ -58,8 +50,8 @@ ameba_list_append(private_includes
 
 #WARNING: Select right API based on your component's release/not-release/standalone
 
-###NOTE: For open-source component, always build from source
-ameba_add_internal_library(lvgl_drivers
+###NOTE: For closed-source component, only build before release and as part of some libs that are packaged into lib/application
+ameba_add_internal_library(ft6336u
     p_SOURCES
         ${private_sources}
     p_INCLUDES

@@ -55,3 +55,57 @@ menu "Graphics Library Selection"
         endchoice
     endif
 endmenu
+
+menu "Panel Selection"
+    choice
+        prompt "Select Panel"
+        config ST7701S_MENU
+            bool "St7701s"
+            select ST7701S
+
+        config ST7701S_RGB565_MENU
+            bool "St7701s_rgb565"
+            select ST7701S_RGB565
+
+        config ST7701P_RGB_MENU
+            bool "St7701p_rgb"
+            select ST7701P_RGB
+
+        config HJ3508_12_MENU
+            bool "Hj3508_12"
+            select HJ3508_12
+
+        config B1620A_MENU
+            bool "B1620A"
+            select B1620A
+
+        config T1720A_MENU
+            bool "T1720A"
+            select T1720A
+
+        config JD9165BA_MENU
+            bool "JD9165BA"
+            select JD9165BA
+    endchoice
+endmenu
+
+config ST7701S
+bool
+
+config HJ3508_12
+bool
+
+config B1620A
+bool
+
+config T1720A
+bool
+
+config ST7701S_RGB565
+bool
+
+config ST7701P_RGB
+bool
+
+config JD9165BA
+bool
