@@ -19,10 +19,60 @@
 #include "gpio_api.h"
 #include "gpio_irq_api.h"
 
-#define RST_PIN             _PA_18
-#define INT_PIN             _PA_17
-#define SDA_PIN             _PA_27
-#define SCL_PIN             _PA_28
+#if defined(CONFIG_ST7701S_RGB565) && CONFIG_ST7701S_RGB565
+#define RST_PIN                _PA_18
+#define INT_PIN                _PA_17
+#define SDA_PIN                _PA_27
+#define SCL_PIN                _PA_28
+#define XSIZE                  480
+#define YSIZE                  480
+#define TRANSFORM_EXCHANGE_X_Y 1
+#define TRANSFORM_INVERSE_X    0
+#define TRANSFORM_INVERSE_Y    1
+
+#elif defined(CONFIG_ST7701P_RGB) && CONFIG_ST7701P_RGB
+#define RST_PIN                _PB_0
+#define INT_PIN                _PA_31
+#define SDA_PIN                _PA_29
+#define SCL_PIN                _PA_30
+#define XSIZE                  480
+#define YSIZE                  480
+#define TRANSFORM_EXCHANGE_X_Y 0
+#define TRANSFORM_INVERSE_X    1
+#define TRANSFORM_INVERSE_Y    1
+
+#elif defined(CONFIG_T1720A) && CONFIG_T1720A
+#define RST_PIN                _PB_0
+#define INT_PIN                _PA_31
+#define SDA_PIN                _PA_29
+#define SCL_PIN                _PA_30
+#define XSIZE                  800
+#define YSIZE                  480
+#define TRANSFORM_EXCHANGE_X_Y 0
+#define TRANSFORM_INVERSE_X    0
+#define TRANSFORM_INVERSE_Y    0
+
+#elif defined(CONFIG_JD9165BA) && CONFIG_JD9165BA
+#define RST_PIN                _PB_0
+#define INT_PIN                _PA_31
+#define SDA_PIN                _PA_29
+#define SCL_PIN                _PA_30
+#define XSIZE                  1024
+#define YSIZE                  600
+#define TRANSFORM_EXCHANGE_X_Y 0
+#define TRANSFORM_INVERSE_X    0
+#define TRANSFORM_INVERSE_Y    0
+#else
+#define RST_PIN                -1
+#define INT_PIN                -1
+#define SDA_PIN                -1
+#define SCL_PIN                -1
+#define XSIZE                  480
+#define YSIZE                  480
+#define TRANSFORM_EXCHANGE_X_Y 0
+#define TRANSFORM_INVERSE_X    0
+#define TRANSFORM_INVERSE_Y    0
+#endif
 
 #define GT_CTRL_REG         0X8040
 #define GT_CFGS_REG         0X8047
@@ -37,8 +87,6 @@
 #define GT_TP5_REG          0X8170
 
 #define TPD_MAX_FINGERS     5
-#define XSIZE               480
-#define YSIZE               480
 #define I2C_ADDR            0x14
 #define I2C_BUS_CLK         400000
 
@@ -172,19 +220,36 @@ static int GT911_firmware_info(void)
 
 void transform_point(void)
 {
-    int x = g_gt911_touch_data.x;
-    int y = g_gt911_touch_data.y;
+    int x = 0;
+    int y = 0;
 
-    g_gt911_touch_data.x = YSIZE - y;
+#if TRANSFORM_INVERSE_X
+    x = XSIZE - g_gt911_touch_data.x;
+#else
+    x = g_gt911_touch_data.x;
+#endif
+
+#if TRANSFORM_INVERSE_Y
+    y = YSIZE - g_gt911_touch_data.y;
+#else
+    y = g_gt911_touch_data.y;
+#endif
+
+#if TRANSFORM_EXCHANGE_X_Y
+    g_gt911_touch_data.x = y;
     g_gt911_touch_data.y = x;
+#else
+    g_gt911_touch_data.x = x;
+    g_gt911_touch_data.y = y;
+#endif
 }
 
 static void GT911_touch_report(void)
 {
     g_gt911_touch_data.state = TOUCH_RELEASE;
     uint8_t buf[10] = {0};
-    g_gt911_touch_data.x = 480;
-    g_gt911_touch_data.y = 480;
+    g_gt911_touch_data.x = XSIZE;
+    g_gt911_touch_data.y = YSIZE;
     static uint16_t x_old = 0;
     static uint16_t y_old = 0;
 

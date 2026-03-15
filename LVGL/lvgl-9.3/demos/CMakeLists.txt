@@ -35,12 +35,21 @@ set(private_compile_options)         #private compile_options
 #------------------------------#
 # Component private part, user config begin
 
-ameba_list_append(private_sources
+
+ameba_list_append_if(CONFIG_AMEBASMART private_sources
     lv_demos.c
 )
+
+ameba_list_append_if(CONFIG_AMEBAGREEN2 private_sources
+    lv_lcd_demo.c
+    touch.c
+)
+
 ameba_list_append(private_includes
     ../lvgl
     ../lv_drivers/include
+    ../../../display
+    ../../../drivers/gt911
 )
 
 # Component private part, user config end
