@@ -1,4 +1,7 @@
 ameba_add_subdirectories_if(CONFIG_LVGL_ENABLE LVGL)
+if (CONFIG_AMEBAGREEN2)
+ameba_add_subdirectory_if_exist(display)
+endif ()
 ameba_add_subdirectory_if_exist(graphics)
 ameba_add_subdirectory_if_exist(third_party)
 ameba_add_subdirectory(drivers)
