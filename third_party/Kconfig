@@ -17,4 +17,6 @@ menu "Third Party Libraries"
         default n
         help
             Enable zlib compression library.
+
+    orsource "flashdb/Kconfig"
 endmenu
