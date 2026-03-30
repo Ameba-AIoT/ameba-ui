@@ -8,8 +8,9 @@ set(public_libraries)               #public libraries(files), NOTE: linked with 
 
 #----------------------------------------#
 # Component public part, user config begin
-
-# You may use if-else condition to set or update predefined variable above
+ameba_list_append(public_includes
+    ../include
+)
 
 # Component public part, user config end
 #----------------------------------------#
@@ -38,54 +39,25 @@ set(private_compile_options)         #private compile_options
 # Component private part, user config begin
 
 ameba_list_append(private_sources
-    display_mode_setting.c
-    panel_pin_config.c
-    panel_manager.c
-    panels/panel_st7701s_mipi.c
-    panels/panel_st7701s.c
-    panels/panel_st7701s_rgb565.c
-    panels/panel_st7701p_rgb.c
-    panels/panel_hj3508_12.c
-    panels/panel_b1620a.c
-    panels/panel_t1720a.c
-    panels/panel_jd9165ba.c
-    panels/panel_spi_init.c
-    controller/spi/spi_only.c
-)
-
-ameba_list_append_if(CONFIG_AMEBAGREEN2 private_sources
-    pal/${c_SOC_TYPE}/panel_pin_setting.c
-    controller/${c_SOC_TYPE}/display_controller.c
-    controller/rgb/lcdc_rgb.c
-)
-
-ameba_list_append_if(CONFIG_AMEBASMART private_sources
-    pal/${c_SOC_TYPE}/panel_pin_setting.c
-    controller/${c_SOC_TYPE}/display_controller.c
-    controller/mipi/lcdc_mipi.c
-)
-
-ameba_list_append(private_includes
-    controller/include
-    ./
-)
-
-ameba_list_append(private_definitions
-    __RTOS__
-    NDEBUG
+    touch.c
 )
 
 ameba_list_append(private_compile_options
-    -UDEBUG
-    -Wno-multichar
+    -Wno-incompatible-pointer-types
 )
+
+ameba_list_append(private_includes
+    ../include
+    ../../lvgl
+)
+
 # Component private part, user config end
 #------------------------------#
 
 #WARNING: Select right API based on your component's release/not-release/standalone
 
 ###NOTE: For open-source component, always build from source
-ameba_add_internal_library(lcd
+ameba_add_internal_library(lvgl_drivers
     p_SOURCES
         ${private_sources}
     p_INCLUDES

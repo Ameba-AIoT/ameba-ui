@@ -24,7 +24,7 @@
 
 #define LOG_TAG "panel_b1620a"
 
-static const uint8_t b1620a_init_cmds[][3] = {
+static const uint8_t b1620a_init_cmds[][32] = {
     {0x00, 0x00, 0x00},
 };
 

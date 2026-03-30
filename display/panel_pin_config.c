@@ -384,6 +384,26 @@ pin_config_entry_t default_pin_configs[] = {
             .de_pin = _PA_17,
         },
     },
+        {
+        .panel_name = "st7701s_mipi_480x800",
+        .gpio_config = {
+            .status = true,
+            .reset_pin = _PA_14,
+            .cs_pin = 0xFFFFFFFF,
+            .dc_pin = 0xFFFFFFFF,
+            .bl_pin = 0xFFFFFFFF,
+            .power_en_pin = 0xFFFFFFFF
+        },
+        .spi_config = {
+            .status = false,
+        },
+        .rgb_data_config = {
+            .status = false,
+        },
+        .rgb_ctrl_config = {
+            .status = false,
+        },
+    },
 };
 
 int32_t default_pin_configs_num = sizeof(default_pin_configs) / sizeof(default_pin_configs[0]);

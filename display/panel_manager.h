@@ -118,7 +118,7 @@ typedef struct panel_descriptor {
     panel_spi_config_t *spi_config;
 
     uint32_t init_cmd_count;
-    const uint8_t (*init_cmds)[3];  // initial cmds [cmd, param1, param2]
+    const uint8_t (*init_cmds)[32];  // initial cmds [cmd, param1, param2]
 
     panel_ops_t *ops;
 

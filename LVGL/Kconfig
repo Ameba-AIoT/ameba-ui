@@ -59,6 +59,10 @@ endmenu
 menu "Panel Selection"
     choice
         prompt "Select Panel"
+        config ST7701S_MIPI_MENU
+            bool "St7701s_mipi"
+            select ST7701S_MIPI
+
         config ST7701S_MENU
             bool "St7701s"
             select ST7701S
@@ -88,6 +92,9 @@ menu "Panel Selection"
             select JD9165BA
     endchoice
 endmenu
+
+config ST7701S_MIPI
+bool
 
 config ST7701S
 bool

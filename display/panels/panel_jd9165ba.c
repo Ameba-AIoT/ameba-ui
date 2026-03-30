@@ -21,7 +21,7 @@
 
 #define LOG_TAG "panel_jd9165ba"
 
-static const uint8_t jd9165ba_init_cmds[][3] = {
+static const uint8_t jd9165ba_init_cmds[][32] = {
     {0x00, 0x00, 0x00},
 };
 
