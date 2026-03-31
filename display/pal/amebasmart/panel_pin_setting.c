@@ -27,22 +27,6 @@ void panel_configure_pinmux(const char *panel_name) {
     for (uint32_t i = 0; i < pin_configs_cnt; i++) {
 
         if (strcmp(default_pin_configs[i].panel_name, panel_name) == 0) {
-
-            if (default_pin_configs[i].rgb_data_config.status) {
-                for (int j = 0; j < 24; j++) {
-                    if (default_pin_configs[i].rgb_data_config.data_pins[j] != 0xFFFFFFFF) {
-                        Pinmux_Config(default_pin_configs[i].rgb_data_config.data_pins[j], PINMUX_FUNCTION_LCD);
-                    }
-                }
-            }
-
-            if (default_pin_configs[i].rgb_ctrl_config.status) {
-                Pinmux_Config(default_pin_configs[i].rgb_ctrl_config.hsync_pin, PINMUX_FUNCTION_LCD);
-                Pinmux_Config(default_pin_configs[i].rgb_ctrl_config.vsync_pin, PINMUX_FUNCTION_LCD);
-                Pinmux_Config(default_pin_configs[i].rgb_ctrl_config.dclk_pin, PINMUX_FUNCTION_LCD);
-                Pinmux_Config(default_pin_configs[i].rgb_ctrl_config.de_pin, PINMUX_FUNCTION_LCD);
-            }
-
             if (default_pin_configs[i].gpio_config.status) {
                 if (default_pin_configs[i].gpio_config.reset_pin != 0xFFFFFFFF) {
                     GPIO_InitTypeDef gpio_init = {0};

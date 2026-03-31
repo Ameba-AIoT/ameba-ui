@@ -24,7 +24,7 @@
 
 #define LOG_TAG "panel_st7701p_rgb"
 
-static const uint8_t st7701p_rgb_init_cmds[][3] = {
+static const uint8_t st7701p_rgb_init_cmds[][32] = {
     {0x00, 0x00, 0x00},
 };
 

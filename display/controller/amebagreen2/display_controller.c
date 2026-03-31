@@ -47,12 +47,6 @@ bool controller_init_with_panel(int32_t color_depth, panel_dev_t *panel) {
             }
             break;
 
-        case PANEL_IF_MIPI_DSI:
-            if (!lcdc_mipi_controller_init(color_depth, panel)) {
-                return false;
-            }
-            break;
-
         case PANEL_IF_SPI:
             if (!spi_only_controller_init(color_depth, panel)) {
                 return false;
@@ -85,10 +79,6 @@ void controller_do_page_flip(uint8_t *buffer) {
             lcdc_rgb_do_page_flip(buffer);
             break;
 
-        case PANEL_IF_MIPI_DSI:
-            lcdc_mipi_do_page_flip(buffer);
-            break;
-
         case PANEL_IF_SPI:
             spi_only_do_page_flip(buffer);
             break;
@@ -107,10 +97,6 @@ void controller_register_vblank_callback(display_driver_callback_t *event) {
     switch (controller_context.panel->desc->interface) {
         case PANEL_IF_RGB:
             lcdc_rgb_register_vblank_callback(event);
-            break;
-
-        case PANEL_IF_MIPI_DSI:
-            lcdc_mipi_register_vblank_callback(event);
             break;
 
         case PANEL_IF_SPI:
