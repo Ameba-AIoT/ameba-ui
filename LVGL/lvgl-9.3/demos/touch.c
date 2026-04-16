@@ -13,57 +13,56 @@
  * limitations under the License.
  */
 
-#include "gt911.h"
-#include "ft6336u.h"
+ #include <string.h>
 
 #include "touch.h"
+#include "input.h"
 
-static uint16_t g_x = 0;
-static uint16_t g_y = 0;
-static uint8_t g_status = 3;
+static input_touch_data_t g_touch = { 0 };
+static input_key_data_t g_key = { 0 };
+static input_mouse_data_t g_mouse = { 0 };
 
-#if ((defined(CONFIG_T1720A) && CONFIG_T1720A) || (defined(CONFIG_ST7701S_RGB565) && CONFIG_ST7701S_RGB565) || (defined(CONFIG_ST7701P_RGB) && CONFIG_ST7701P_RGB) || (defined(CONFIG_JD9165BA) && CONFIG_JD9165BA))
-static void touch_data_callback(gt911_touch_data_t data)
+void input_event_callback(input_event_t *event)
 {
-    g_x = data.x;
-    g_y = data.y;
-    if (data.state == TOUCH_PRESS) {
-        g_status = LV_INDEV_STATE_PR;
-    } else {
-        g_status = LV_INDEV_STATE_REL;
+    switch (event->type) {
+        case INPUT_EVENT_TOUCH:
+            memcpy(&g_touch, &event->data.touch, sizeof(input_touch_data_t));
+            break;
+        case INPUT_EVENT_KEY:
+            memcpy(&g_key, &event->data.key, sizeof(input_key_data_t));
+            break;
+        case INPUT_EVENT_MOUSE:
+            memcpy(&g_mouse, &event->data.mouse, sizeof(input_mouse_data_t));
+            break;
+        default:
+            break;
     }
 }
-#elif defined(CONFIG_B1620A) && CONFIG_B1620A
-static void touch_data_callback(ft6336u_touch_data_t data)
-{
-    g_x = data.x;
-    g_y = data.y;
-    if (data.state == TOUCH_PRESS) {
-        g_status = LV_INDEV_STATE_PR;
-    } else {
-        g_status = LV_INDEV_STATE_REL;
-    }
-}
-#endif
 
 bool touch_init(void)
 {
-#if ((defined(CONFIG_T1720A) && CONFIG_T1720A) || (defined(CONFIG_ST7701S_RGB565) && CONFIG_ST7701S_RGB565) || (defined(CONFIG_ST7701P_RGB) && CONFIG_ST7701P_RGB) || (defined(CONFIG_JD9165BA) && CONFIG_JD9165BA))
-    gt911_init();
-    gt911_register_touch_data_callback(touch_data_callback);
-    return true;
-#elif defined(CONFIG_B1620A) && CONFIG_B1620A
-    ft6336u_init();
-    ft6336u_register_touch_data_callback(touch_data_callback);
-    return true;
-#endif
-    return false;
+    input_device_t *dev = NULL;
+    input_manager_init();
+    input_set_global_callback(input_event_callback);
+    dev = input_get_device("gt911");
+
+    if (dev) {
+        dev->ops.init();
+        dev->ops.enable();
+    }
+
+    return dev != NULL;
 }
 
-void touch_read(lv_indev_t * indev, lv_indev_data_t * data)
+void touch_read(lv_indev_t *indev, lv_indev_data_t *data)
 {
     (void)indev;
-    data->point.x = g_x;
-    data->point.y = g_y;
-    data->state = g_status;
+    data->point.x = g_touch.x;
+    data->point.y = g_touch.y;
+
+    if (g_touch.pressed) {
+        data->state = LV_INDEV_STATE_PR;
+    } else {
+        data->state = LV_INDEV_STATE_REL;
+    }
 }
