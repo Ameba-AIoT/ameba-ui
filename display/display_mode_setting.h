@@ -45,7 +45,7 @@ static inline int32_t display_mode_get_width(void) {
 #elif defined(CONFIG_JD9165BA) && CONFIG_JD9165BA
     return 1024;
 #else
-    RTK_LOGE(LOG_TAG, "Unsupported panel:%ld\n");
+    //RTK_LOGE(LOG_TAG, "Unsupported panel:%ld\n");
     return 0;
 #endif
 }
@@ -68,7 +68,7 @@ static inline int32_t display_mode_get_height(void) {
 #elif defined(CONFIG_JD9165BA) && CONFIG_JD9165BA
     return 600;
 #else
-    RTK_LOGE(LOG_TAG, "Unsupported panel:%ld\n");
+    //RTK_LOGE(LOG_TAG, "Unsupported panel:%ld\n");
     return 0;
 #endif
 }
