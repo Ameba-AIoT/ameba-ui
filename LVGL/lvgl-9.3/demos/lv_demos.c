@@ -25,6 +25,11 @@
 #include "display_mode_setting.h"
 
 #define LOG_TAG "LV-Demos"
+#define ENABLE_TOUCH_DEMO 0
+
+#if ENABLE_TOUCH_DEMO
+#include "touch.h"
+#endif
 
 typedef struct {
     lv_display_t *disp;
@@ -243,6 +248,18 @@ static int lvgl_init(uint16_t rotation) {
             return -5;
         }
     }
+
+    RTK_LOGI(LOG_TAG, "Display initialized\n");
+
+#if ENABLE_TOUCH_DEMO
+    touch_init();
+    if (touch_register_to_lvgl() != 0) {
+        RTK_LOGE(LOG_TAG, "Failed to register touch!\n");
+        return -6;
+    }
+#endif
+
+    RTK_LOGI(LOG_TAG, "===== LVGL Initialization Complete =====\n");
     s_ctx->is_running = true;
 
     return 0;

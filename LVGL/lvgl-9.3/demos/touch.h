@@ -21,7 +21,7 @@
 
 #include "lvgl.h"
 
-bool touch_init(void);
-void touch_read(lv_indev_t * indev, lv_indev_data_t * data);
+void touch_init(void);
+int touch_register_to_lvgl(void);
 
 #endif // AMEBA_UI_LVGL_TOUCH_H

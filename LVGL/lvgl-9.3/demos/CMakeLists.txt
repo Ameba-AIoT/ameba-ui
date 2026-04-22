@@ -37,6 +37,7 @@ set(private_compile_options)         #private compile_options
 
 ameba_list_append_if(CONFIG_AMEBASMART private_sources
     lv_demos.c
+    touch.c
 )
 
 ameba_list_append_if(CONFIG_AMEBAGREEN2 private_sources
