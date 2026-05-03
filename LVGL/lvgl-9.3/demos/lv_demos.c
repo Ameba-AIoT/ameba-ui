@@ -56,7 +56,7 @@ static inline uint32_t ameba_get_tick(void) {
 
 static void display_vblank_handler(void) {
     if (!s_ctx->flip_done) {
-        lv_thread_sync_signal(&s_ctx->flip_sync);
+        lv_thread_sync_signal_isr(&s_ctx->flip_sync);
         s_ctx->flip_done = true;
     }
 }
