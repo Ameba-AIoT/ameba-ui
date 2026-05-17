@@ -13,34 +13,15 @@
  * limitations under the License.
  */
 
-#include "cst328.h"
+#ifndef AMEBA_UI_LVGL_TOUCH_H
+#define AMEBA_UI_LVGL_TOUCH_H
+
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "lvgl.h"
 
-static uint16_t g_x = 0;
-static uint16_t g_y = 0;
-static uint8_t g_status = 3;
+void touch_init(void);
+int touch_register_to_lvgl(void);
 
-static void touch_data_callback(cst328_touch_data_t data)
-{
-    g_x = data.x;
-    g_y = data.y;
-    if (data.state == TOUCH_PRESS) {
-        g_status = LV_INDEV_STATE_PR;
-    } else {
-        g_status = LV_INDEV_STATE_REL;
-    }
-}
-
-void touch_init(void)
-{
-    cst328_init();
-    cst328_register_touch_data_callback(touch_data_callback);
-}
-
-void touch_read(lv_indev_t * indev, lv_indev_data_t * data)
-{
-    (void)indev;
-    data->point.x = g_x;
-    data->point.y = g_y;
-    data->state = g_status;
-}
+#endif // AMEBA_UI_LVGL_TOUCH_H

@@ -9,6 +9,10 @@ set(public_libraries)               #public libraries(files), NOTE: linked with 
 #----------------------------------------#
 # Component public part, user config begin
 
+ameba_list_append(public_includes
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 # You may use if-else condition to set or update predefined variable above
 
 # Component public part, user config end
@@ -38,11 +42,7 @@ set(private_compile_options)         #private compile_options
 # Component private part, user config begin
 
 ameba_list_append(private_sources
-    touch_example.c
-)
-ameba_list_append(private_definitions
-    LV_LVGL_H_INCLUDE_SIMPLE
-    LV_CONF_INCLUDE_SIMPLE
+    ft6336u.c
 )
 
 # Component private part, user config end
@@ -50,8 +50,8 @@ ameba_list_append(private_definitions
 
 #WARNING: Select right API based on your component's release/not-release/standalone
 
-###NOTE: For open-source component, always build from source
-ameba_add_internal_library(lvgl_test
+###NOTE: For closed-source component, only build before release and as part of some libs that are packaged into lib/application
+ameba_add_internal_library(ft6336u
     p_SOURCES
         ${private_sources}
     p_INCLUDES

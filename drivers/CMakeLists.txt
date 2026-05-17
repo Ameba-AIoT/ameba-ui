@@ -56,6 +56,7 @@ elseif(CONFIG_AMEBAGREEN2)
     ameba_list_append(driver_list st7262)
     ameba_list_append(driver_list st7701s_rgb)
     ameba_list_append(driver_list gt911)
+    ameba_list_append(driver_list ft6336u)
 endif()
 
 if(driver_list)
