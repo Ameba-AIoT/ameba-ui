@@ -1,4 +1,15 @@
 menu "Graphics Libraries Configuration"
-    rsource "LVGL/Kconfig"
-    rsource "third_party/Kconfig"
+    config GRAPHIC_UI_MENU
+        bool "Enable Graphics UI"
+        select GRAPHIC_UI
+        help
+            Enable entire UI module. If disabled, none of the UI components will be compiled.
+
+    if GRAPHIC_UI
+        rsource "LVGL/Kconfig"
+        rsource "third_party/Kconfig"
+    endif
 endmenu
+
+config GRAPHIC_UI
+bool

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Realtek Semiconductor Corp.
+ * Copyright (c) 2026 Realtek Semiconductor Corp.
  * All rights reserved.
  *
  * Licensed under the Realtek License, Version 1.0 (the "License");
@@ -13,11 +13,13 @@
  * limitations under the License.
  */
 
-#ifndef AMEBA_UI_LVGL_LV_DRIVERS_LCDC
-#define AMEBA_UI_LVGL_LV_DRIVERS_LCDC
+#ifndef AMEBA_UI_DISPLAYER_CONTROLLER_DISPLAY_CONTROLLER_H
+#define AMEBA_UI_DISPLAYER_CONTROLLER_DISPLAY_CONTROLLER_H
 
 #include <stdint.h>
 #include <stdbool.h>
+
+#include "panel_manager.h"
 
 typedef enum {
     LCD_FORMAT_RGB565,
@@ -34,22 +36,15 @@ typedef struct {
     uint32_t vsync_front_porch;
     uint32_t vsync_back_porch;
     uint32_t vsync_pulse_width;
-    uint32_t clock_frequency;  // Hz
+    uint32_t clock_frequency;
 } lcd_timing_t;
 
 typedef struct {
     void (*vblank_handler)(void *user_data);
-    void (*page_flip_handler)(void *user_data);
-} lcdc_event_t;
+} display_driver_callback_t;
 
-bool lcdc_init(lcd_format_t format, const lcd_timing_t *timing);
-bool lcdc_init_default(lcd_format_t format, uint32_t width, uint32_t height);
-void lcdc_deinit(void);
+bool controller_init_with_panel(int32_t color_depth, panel_dev_t *panel);
+void controller_do_page_flip(uint8_t *buffer);
+void controller_register_vblank_callback(display_driver_callback_t *event);
 
-void lcdc_get_resolution(uint32_t *width, uint32_t *height);
-bool lcdc_set_timing(const lcd_timing_t *timing);
-
-void lcdc_page_flip(uint8_t *buffer);
-void lcdc_register_event_callback(lcdc_event_t *callback, void *user_data);
-
-#endif // AMEBA_UI_LVGL_LV_DRIVERS_LCDC
+#endif // AMEBA_UI_DISPLAYER_CONTROLLER_DISPLAY_CONTROLLER_H

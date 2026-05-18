@@ -52,6 +52,12 @@ file(GLOB_RECURSE LVGL_SRCS
     "lvgl/src/libs/libjpeg_turbo/lv_libjpeg_turbo.c"
 )
 
+if(CONFIG_AMEBASMART AND CONFIG_NEON)
+    ameba_list_append(LVGL_SRCS
+        "lvgl/src/draw/sw/blend/neon/lv_blend_neon.S"
+    )
+endif()
+
 file(GLOB_RECURSE LVGL_DEMOS
     "lvgl/demos/**/*.c"
     "lvgl/demos/*.c"
