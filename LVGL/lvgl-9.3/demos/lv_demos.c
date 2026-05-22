@@ -169,7 +169,11 @@ static void flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
         display_mode_flip_buffer(out_buffer);
 
         s_ctx->flip_done = false;
+        lv_thread_sync_wait(&s_ctx->flip_sync);
+        s_ctx->flip_done = true;
     }
+
+    lv_display_flush_ready(disp);
 }
 
 static void lvgl_demo(void) {
@@ -186,13 +190,6 @@ static void lvgl_demo(void) {
     lv_demo_benchmark();
 #endif
 
-}
-
-static void display_flush_wait(lv_display_t * display) {
-    (void)display;
-    if (s_ctx->flip_done == false) {
-        lv_thread_sync_wait(&s_ctx->flip_sync);
-    }
 }
 
 static int lvgl_init(uint16_t rotation) {
@@ -237,7 +234,6 @@ static int lvgl_init(uint16_t rotation) {
 
     lv_display_set_buffers(s_ctx->disp, s_ctx->buf1, s_ctx->buf2,
                             buf_size, LV_DISPLAY_RENDER_MODE_DIRECT);
-    lv_display_set_flush_wait_cb(s_ctx->disp, display_flush_wait);
     lv_display_set_flush_cb(s_ctx->disp, flush_cb);
 
     if (s_ctx->rotation != 0) {
