@@ -106,15 +106,20 @@ void lv_draw_ppe_deinit(void)
 
 static inline bool _ppe_src_cf_supported(lv_color_format_t cf)
 {
+    bool is_cf_supported = false;
+
     switch(cf) {
         case LV_COLOR_FORMAT_RGB565:
         case LV_COLOR_FORMAT_RGB888:
-            return true;
-        case LV_COLOR_FORMAT_XRGB8888:
         case LV_COLOR_FORMAT_ARGB8888:
+        case LV_COLOR_FORMAT_XRGB8888:
+            is_cf_supported = true;
+            break;
         default:
-            return false;
+            break;
     }
+
+    return is_cf_supported;
 }
 
 static bool _ppe_image_transform_supported(const lv_draw_image_dsc_t *draw_dsc)
@@ -138,14 +143,17 @@ static bool _ppe_image_transform_supported(const lv_draw_image_dsc_t *draw_dsc)
         return false;
     }
 
-    if (!_ppe_src_cf_supported(img_dsc->header.cf)) return false;
-
     return true;
 }
 
 static int32_t _ppe_evaluate(lv_draw_unit_t *u, lv_draw_task_t *t)
 {
     LV_UNUSED(u);
+    const lv_draw_dsc_base_t * draw_dsc_base = (lv_draw_dsc_base_t *) t->draw_dsc;
+
+    if(!_ppe_src_cf_supported(draw_dsc_base->layer->color_format)) {
+        return 0;
+    }
 
 #if PPE_DEBUG
     RTK_LOGI(LOG_TAG, "%s, type:%d.\n", __func__, t->type);
