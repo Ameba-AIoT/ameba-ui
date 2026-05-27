@@ -7,6 +7,9 @@ ameba_add_subdirectories_if(CONFIG_LIBPNG_ENABLE
 ameba_add_subdirectories_if(CONFIG_ZLIB_ENABLE
     zlib
 )
-ameba_add_subdirectory_if(CONFIG_FLASHDB_ENABLE 
+ameba_add_subdirectory_if(CONFIG_QOI_ENABLE
+    qoi
+)
+ameba_add_subdirectory_if(CONFIG_FLASHDB_ENABLE
     flashdb
 )
