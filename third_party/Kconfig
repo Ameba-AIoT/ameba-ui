@@ -18,5 +18,12 @@ menu "Third Party Libraries"
         help
             Enable zlib compression library.
 
+    config QOI_ENABLE
+        bool "Enable QOI image format"
+        default n
+        help
+            Enable QOI (Quite OK Image) lossless image format support.
+            QOI is a fast, lossless image format with no external dependencies.
+
     orsource "flashdb/Kconfig"
 endmenu
