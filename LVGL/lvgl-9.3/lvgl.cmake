@@ -26,7 +26,7 @@ ameba_list_append(public_includes
     lvgl/demos/stress
     lvgl/demos/benchmark
     lvgl/demos/music
-    port/${c_SOC_TYPE}
+    config/${c_SOC_TYPE}
 )
 
 # Component public part, user config end
@@ -74,7 +74,7 @@ ameba_list_append(private_sources
 )
 
 ameba_list_append(private_includes
-    port/${c_SOC_TYPE}
+    config/${c_SOC_TYPE}
     ${c_CMPT_UI_DIR}/third_party/libjpeg-turbo
     ${c_CMPT_UI_DIR}/third_party/libpng
 )

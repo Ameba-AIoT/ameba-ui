@@ -1,0 +1,10 @@
+[
+    {
+    "Name": "FlashDB",
+    "License": "Apache License",
+    "License File": "LICENSE",
+    "Version Number": "2.1.1",
+    "Upstream URL": "https://github.com/armink/FlashDB.git",
+    "Description": "FlashDB is an ultra-lightweight embedded database that focuses on providing data storage solutions for embedded products."
+    }
+]
