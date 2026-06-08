@@ -9,20 +9,15 @@ menu "Graphics Library Selection"
     if LVGL_ENABLE
         choice
             prompt "LVGL Version"
-            default LVGL_8_3
+            default LVGL_9_3
             help
                 Select the version of LVGL graphics library.
-
-            config LVGL_8_3
-                bool "LVGL 8.3"
-                help
-                    Use stable LVGL 8.3 (recommended for legacy projects).
 
             config LVGL_9_3
                 bool "LVGL 9.3"
                 select LIBJPEG_TURBO_ENABLE
                 help
-                    Use latest LVGL 9.3 with new features and optimizations.
+                    Use LVGL 9.3.
         endchoice
     endif
 
@@ -54,43 +49,6 @@ menu "Graphics Library Selection"
                     Benchmark your system
         endchoice
     endif
-endmenu
-
-menu "Panel Selection"
-    choice
-        prompt "Select Panel"
-        config ST7701S_MIPI_MENU
-            bool "St7701s_mipi"
-            select ST7701S_MIPI
-
-        config ST7701S_MENU
-            bool "St7701s"
-            select ST7701S
-
-        config ST7701S_RGB565_MENU
-            bool "St7701s_rgb565"
-            select ST7701S_RGB565
-
-        config ST7701P_RGB_MENU
-            bool "St7701p_rgb"
-            select ST7701P_RGB
-
-        config HJ3508_12_MENU
-            bool "Hj3508_12"
-            select HJ3508_12
-
-        config B1620A_MENU
-            bool "B1620A"
-            select B1620A
-
-        config T1720A_MENU
-            bool "T1720A"
-            select T1720A
-
-        config JD9165BA_MENU
-            bool "JD9165BA"
-            select JD9165BA
-    endchoice
 endmenu
 
 config ST7701S_MIPI

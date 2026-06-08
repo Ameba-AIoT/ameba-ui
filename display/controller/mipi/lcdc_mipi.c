@@ -493,7 +493,8 @@ void lcdc_mipi_do_page_flip(uint8_t *buffer) {
         return;
     }
 
-    DCache_CleanInvalidate(0xFFFFFFFF, 0xFFFFFFFF);
+    DCache_Clean((u32)buffer, lcdc_context.buffer_size);
+
     lcdc_context.lcdc_init_struct.layerx[0].LCDC_LayerImgBaseAddr = (u32)buffer;
     LCDC_LayerConfig(LCDC, LCDC_LAYER_LAYER1, &lcdc_context.lcdc_init_struct.layerx[LCDC_LAYER_LAYER1]);
     LCDC_TrigerSHWReload(LCDC);
