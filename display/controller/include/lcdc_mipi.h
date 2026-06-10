@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef AMEBA_UI_DISPLAYER_CONTROLLER_LCDC_MIPI_H
-#define AMEBA_UI_DISPLAYER_CONTROLLER_LCDC_MIPI_H
+#ifndef AMEBA_UI_DISPLAY_CONTROLLER_INCLUDE_LCDC_MIPI_H
+#define AMEBA_UI_DISPLAY_CONTROLLER_INCLUDE_LCDC_MIPI_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -27,4 +27,4 @@ bool lcdc_mipi_controller_init(int32_t color_depth, panel_dev_t *panel);
 void lcdc_mipi_do_page_flip(uint8_t *buffer);
 void lcdc_mipi_register_vblank_callback(display_driver_callback_t *event);
 
-#endif // AMEBA_UI_DISPLAYER_CONTROLLER_LCDC_MIPI_H
+#endif // AMEBA_UI_DISPLAY_CONTROLLER_INCLUDE_LCDC_MIPI_H

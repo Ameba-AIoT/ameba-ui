@@ -1,0 +1,12 @@
+# Apps are only supported on chips with a display controller subsystem.
+if(CONFIG_AMEBASMART OR CONFIG_AMEBAGREEN2)
+    if(CONFIG_LV_DEMO_WIDGETS)
+        ameba_add_subdirectory(lv_demo_widgets)
+    elseif(CONFIG_LV_DEMO_STRESS)
+        ameba_add_subdirectory(lv_demo_stress)
+    elseif(CONFIG_LV_DEMO_MUSIC)
+        ameba_add_subdirectory(lv_demo_music)
+    elseif(CONFIG_LV_DEMO_BENCHMARK)
+        ameba_add_subdirectory(lv_demo_benchmark)
+    endif()
+endif()

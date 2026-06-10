@@ -1,0 +1,51 @@
+menu "FlashDB Configuration"
+    config FLASHDB_ENABLE
+        bool "Enable FlashDB"
+        select FLASHDB if WHC_HOST || WHC_NONE
+        help
+          FlashDB is a lightweight embedded database that supports key-value and time series data.
+          It is designed for embedded systems with limited resources.
+          Note: Only available when WHC_HOST or WHC_NONE is selected.
+
+    if FLASHDB_ENABLE
+            config FLASHDB_USING_KVDB
+                bool "Enable Key-Value Database (KVDB)"
+                default y
+                help
+                    Enable key-value database feature.
+
+            config FLASHDB_USING_TSDB
+                bool "Enable Time Series Database (TSDB)"
+                default n
+                help
+                   Enable time series database feature.
+
+            config FLASHDB_DEBUG_ENABLE
+                bool "Enable FlashDB Debug"
+                default n
+                help
+                    Enable debug output for FlashDB.
+
+            config FLASHDB_TEST_ENABLE
+                bool "Enable FlashDB Test"
+                default n
+                help
+                  Enable FlashDB test cases.
+                  This will include test code and may increase binary size.
+    endif
+endmenu
+
+config FLASHDB_ENABLE
+    bool
+
+config FLASHDB_USING_KVDB
+    bool
+
+config FLASHDB_USING_TSDB
+    bool
+
+config FLASHDB_DEBUG_ENABLE
+    bool
+
+config FLASHDB_TEST_ENABLE
+    bool
