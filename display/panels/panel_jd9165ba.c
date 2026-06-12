@@ -21,7 +21,7 @@
 
 #define LOG_TAG "panel_jd9165ba"
 
-static const uint8_t jd9165ba_init_cmds[][32] = {
+static const uint8_t jd9165ba_init_cmds[][64] = {
     {0x00, 0x00, 0x00},
 };
 
@@ -164,6 +164,7 @@ panel_desc_t jd9165ba_desc = {
 
     .interface = PANEL_IF_RGB,
     .rgb_format = PANEL_RGB_FORMAT_RGB888,
+    .lane_count = 2,
 
     .timing = jd9165ba_timing,
     .gpio_config = NULL,

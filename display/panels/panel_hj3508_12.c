@@ -25,7 +25,7 @@
 
 #define LOG_TAG "panel_hj3508_12"
 
-static const uint8_t hj3508_12_init_cmds[][32] = {
+static const uint8_t hj3508_12_init_cmds[][64] = {
     {0x00, 0x00, 0x00},
 };
 
@@ -184,6 +184,7 @@ panel_desc_t hj3508_12_desc = {
 
     .interface = PANEL_IF_RGB,
     .rgb_format = PANEL_RGB_FORMAT_RGB888,
+    .lane_count = 2,
 
     .timing = hj3508_12_timing,
     .gpio_config = NULL,

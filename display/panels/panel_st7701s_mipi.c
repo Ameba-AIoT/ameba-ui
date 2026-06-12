@@ -26,7 +26,7 @@
 #define REGFLAG_DELAY          0xFE
 #define REGFLAG_END_OF_TABLE   0xFF
 
-static const uint8_t st7701s_mipi_init_cmds[][32] = {
+static const uint8_t st7701s_mipi_init_cmds[][64] = {
     /* 0: Sleep Out */
     {0x11, 0,
      /* padding */},
@@ -266,6 +266,7 @@ panel_desc_t st7701s_mipi_desc = {
 
     .interface = PANEL_IF_MIPI_DSI,
     .rgb_format = PANEL_RGB_FORMAT_RGB888,
+    .lane_count = 2,
 
     .timing = st7701s_mipi_timing,
     .gpio_config = NULL,
