@@ -1,0 +1,26 @@
+menu "Touch Controller Selection"
+    choice
+        prompt "Select Touch Controller"
+        default TOUCH_CST328_MENU
+        config TOUCH_CST328_MENU
+            bool "CST328"
+            select TOUCH_CST328
+
+        config TOUCH_GT911_MENU
+            bool "GT911"
+            select TOUCH_GT911
+
+        config TOUCH_TDDI_MENU
+            bool "TDDI"
+            select TOUCH_TDDI
+    endchoice
+endmenu
+
+config TOUCH_CST328
+    bool
+
+config TOUCH_GT911
+    bool
+
+config TOUCH_TDDI
+    bool

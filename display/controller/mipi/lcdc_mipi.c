@@ -38,7 +38,7 @@
 #define MIPI_DSI_RTNI                               2//4
 
 typedef struct {
-    const uint8_t (*table)[32];
+    const uint8_t (*table)[64];
     uint32_t table_size;
     uint32_t index;
     volatile uint8_t init_done;
@@ -225,7 +225,7 @@ static uint8_t panel_send_next_cmd(void)
 
 
 
-static void dsi_panel_push_table(uint32_t table_size, const uint8_t table[][32])
+static void dsi_panel_push_table(uint32_t table_size, const uint8_t table[][64])
 {
     MIPI_DSI_TO1_Set(MIPI, DISABLE, 0);
     MIPI_DSI_TO2_Set(MIPI, ENABLE, 0x7FFFFFFF);
@@ -239,6 +239,19 @@ static void dsi_panel_push_table(uint32_t table_size, const uint8_t table[][32])
     MIPI_DSI_INT_Config(MIPI, DISABLE, ENABLE, FALSE);
 
     MIPI_DSI_init(MIPI, &lcdc_context.mipi_init_struct);
+
+    /*
+	* D-PHY voltage settling delay after MIPI reset.
+	*
+	* Depends on board-level factors: external circuit, capacitance,
+	* temperature, and PCB routing. Typical range: 1 ~ 5 ms.
+	* MUST be tuned per hardware design; a larger value is always safer.
+	*
+	* Alternatively, this delay can be configured per panel by inserting
+	* {REGFLAG_DELAY, 5, {}} as the first entry of the panel's
+	* LCM_setting_table_t, which achieves the same effect.
+    */
+    rtos_time_delay_ms(5);
 
     panel_cmd_ctx_t *ctx = &lcdc_context.panel_ctx;
     ctx->table      = table;
@@ -304,10 +317,9 @@ static void lcdc_display_init(const panel_timing_t *panel_timing)
     LCDC_Cmd(LCDC, ENABLE);
     while (!LCDC_CheckLCDCReady(LCDC));
 
-    MIPI_DSI_Mode_Switch(MIPI, ENABLE);
 }
 
-static bool mipi_init(const panel_timing_t *panel_timing) {
+static bool mipi_init(const panel_timing_t *panel_timing, uint32_t lane_count) {
     MIPI_StructInit(&lcdc_context.mipi_init_struct);
 
     u32 bit_per_pixel;
@@ -326,7 +338,7 @@ static bool mipi_init(const panel_timing_t *panel_timing) {
         break;
     }
 
-    lcdc_context.mipi_init_struct.MIPI_LaneNum = 2;
+    lcdc_context.mipi_init_struct.MIPI_LaneNum = lane_count;
     lcdc_context.mipi_init_struct.MIPI_FrameRate = panel_timing->clock_frequency;
 
     lcdc_context.mipi_init_struct.MIPI_HSA = panel_timing->hsync_pulse_width * bit_per_pixel / 8 ;//- 10; /* here the unit is pixel but not us */
@@ -405,8 +417,9 @@ static void lcdc_init_irq(lcd_timing_t *timing) {
 }
 
 static bool mipi_controller_init(const panel_timing_t *panel_timing,
-                uint32_t table_size, const uint8_t table[][32]) {
-    mipi_init(panel_timing);
+                uint32_t lane_count,
+                uint32_t table_size, const uint8_t table[][64]) {
+    mipi_init(panel_timing, lane_count);
 
     dsi_panel_push_table(table_size, table);
 
@@ -470,10 +483,11 @@ bool lcdc_mipi_controller_init(int32_t color_depth, panel_dev_t *panel) {
 
     lcdc_mipi_enable_clk();
 
+    uint32_t lane_count = panel->desc->lane_count;
     uint32_t table_size = panel->desc->init_cmd_count;
-    const uint8_t (*table)[32] = panel->desc->init_cmds;
+    const uint8_t (*table)[64] = panel->desc->init_cmds;
 
-    if (!mipi_controller_init(panel_timing, table_size, table)) {
+    if (!mipi_controller_init(panel_timing, lane_count, table_size, table)) {
         return false;
     }
 
@@ -502,6 +516,7 @@ void lcdc_mipi_do_page_flip(uint8_t *buffer) {
     if (!lcdc_context.lcdc_enabled) {
         RTK_LOGS(LOG_TAG, RTK_LOG_INFO, "lcdc enable\n");
         LCDC_Cmd(LCDC, ENABLE);
+        MIPI_DSI_Mode_Switch(MIPI, ENABLE);
         lcdc_context.lcdc_enabled = true;
     }
 }

@@ -21,7 +21,7 @@
 
 #define LOG_TAG "panel_st7789v"
 
-static const uint8_t st7789v_init_cmds[][32] = {
+static const uint8_t st7789v_init_cmds[][64] = {
     {0x00, 0x00, 0x00},
 };
 
@@ -76,6 +76,7 @@ panel_desc_t st7789v_desc = {
 
     .interface = PANEL_IF_SPI,
     .rgb_format = PANEL_RGB_FORMAT_RGB565,
+    .lane_count = 2,
 
     .timing = st7789v_timing,
     .gpio_config = st7789v_gpio_config,

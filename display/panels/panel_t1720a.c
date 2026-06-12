@@ -21,7 +21,7 @@
 
 #define LOG_TAG "panel_t1720a"
 
-static const uint8_t t1720a_init_cmds[][32] = {
+static const uint8_t t1720a_init_cmds[][64] = {
     {0x00, 0x00, 0x00},
 };
 
@@ -162,6 +162,7 @@ panel_desc_t t1720a_desc = {
 
     .interface = PANEL_IF_RGB,
     .rgb_format = PANEL_RGB_FORMAT_RGB888,
+    .lane_count = 2,
 
     .timing = t1720a_timing,
     .gpio_config = NULL,
