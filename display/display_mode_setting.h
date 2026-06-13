@@ -28,7 +28,9 @@ void display_mode_set_callback(display_mode_callback_t *callback);
 void display_mode_flip_buffer(uint8_t *buffer);
 
 static inline int32_t display_mode_get_width(void) {
-#if defined(CONFIG_ST7701S_MIPI) && CONFIG_ST7701S_MIPI
+#if defined(CONFIG_ST7102_MIPI) && CONFIG_ST7102_MIPI
+    return 480;
+#elif defined(CONFIG_ST7701S_MIPI) && CONFIG_ST7701S_MIPI
     return 480;
 #elif defined(CONFIG_ST7701S) && CONFIG_ST7701S
     return 800;
@@ -51,7 +53,9 @@ static inline int32_t display_mode_get_width(void) {
 }
 
 static inline int32_t display_mode_get_height(void) {
-#if defined(CONFIG_ST7701S_MIPI) && CONFIG_ST7701S_MIPI
+#if defined(CONFIG_ST7102_MIPI) && CONFIG_ST7102_MIPI
+    return 480;
+#elif defined(CONFIG_ST7701S_MIPI) && CONFIG_ST7701S_MIPI
     return 800;
 #elif defined(CONFIG_ST7701S) && CONFIG_ST7701S
     return 480;

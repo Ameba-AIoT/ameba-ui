@@ -1,6 +1,11 @@
 menu "Panel Selection"
     choice
         prompt "Select Panel"
+        default ST7701S_MENU
+        config ST7102_MIPI_MENU
+            bool "St7102_mipi"
+            select ST7102_MIPI
+
         config ST7701S_MIPI_MENU
             bool "St7701s_mipi"
             select ST7701S_MIPI
@@ -34,3 +39,30 @@ menu "Panel Selection"
             select JD9165BA
     endchoice
 endmenu
+
+config ST7102_MIPI
+bool
+
+config ST7701S_MIPI
+bool
+
+config ST7701S
+bool
+
+config HJ3508_12
+bool
+
+config B1620A
+bool
+
+config T1720A
+bool
+
+config ST7701S_RGB565
+bool
+
+config ST7701P_RGB
+bool
+
+config JD9165BA
+bool
