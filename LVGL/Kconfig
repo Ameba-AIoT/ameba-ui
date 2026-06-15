@@ -50,27 +50,3 @@ menu "Graphics Library Selection"
         endchoice
     endif
 endmenu
-
-config ST7701S_MIPI
-bool
-
-config ST7701S
-bool
-
-config HJ3508_12
-bool
-
-config B1620A
-bool
-
-config T1720A
-bool
-
-config ST7701S_RGB565
-bool
-
-config ST7701P_RGB
-bool
-
-config JD9165BA
-bool

@@ -111,6 +111,7 @@ typedef struct panel_descriptor {
 
     panel_interface_t interface;
     panel_rgb_format_t rgb_format;
+    uint32_t lane_count;
 
     panel_timing_t timing;
     panel_gpio_config_t *gpio_config;
@@ -118,7 +119,7 @@ typedef struct panel_descriptor {
     panel_spi_config_t *spi_config;
 
     uint32_t init_cmd_count;
-    const uint8_t (*init_cmds)[32];  // initial cmds [cmd, param1, param2]
+    const uint8_t (*init_cmds)[64];  // initial cmds [cmd, param1, param2]
 
     panel_ops_t *ops;
 

@@ -45,6 +45,7 @@ ameba_list_append(private_sources
     panels/panel_st7701s.c
     panels/panel_st7701s_rgb565.c
     panels/panel_st7701p_rgb.c
+    panels/panel_st7102_mipi.c
     panels/panel_hj3508_12.c
     panels/panel_b1620a.c
     panels/panel_t1720a.c

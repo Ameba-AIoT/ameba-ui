@@ -9,6 +9,7 @@ menu "Graphics Libraries Configuration"
         rsource "LVGL/Kconfig"
         orsource "frameworks/Kconfig"
         rsource "display/Kconfig"
+        rsource "input/Kconfig"
         rsource "third_party/Kconfig"
     endif
 endmenu

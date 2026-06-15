@@ -21,7 +21,13 @@
 #include "lv_port_touch.h"
 
 #define LOG_TAG     "LV-Touch"
+#if defined(CONFIG_TOUCH_TDDI)
+#define TOUCH_DEV   "tddi"
+#elif defined(CONFIG_TOUCH_GT911)
+#define TOUCH_DEV   "gt911"
+#else
 #define TOUCH_DEV   "cst328"
+#endif
 
 static lv_indev_data_t s_touch_data = {
     .state = LV_INDEV_STATE_RELEASED,
