@@ -46,6 +46,8 @@ static inline int32_t display_mode_get_width(void) {
     return 800;
 #elif defined(CONFIG_JD9165BA) && CONFIG_JD9165BA
     return 1024;
+#elif defined(CONFIG_AXS15260_MIPI) && CONFIG_AXS15260_MIPI
+    return 540;
 #else
     //RTK_LOGE(LOG_TAG, "Unsupported panel:%ld\n");
     return 0;
@@ -71,6 +73,8 @@ static inline int32_t display_mode_get_height(void) {
     return 480;
 #elif defined(CONFIG_JD9165BA) && CONFIG_JD9165BA
     return 600;
+#elif defined(CONFIG_AXS15260_MIPI) && CONFIG_AXS15260_MIPI
+    return 1260;
 #else
     //RTK_LOGE(LOG_TAG, "Unsupported panel:%ld\n");
     return 0;
