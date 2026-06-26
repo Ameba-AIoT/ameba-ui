@@ -37,6 +37,10 @@ menu "Panel Selection"
         config JD9165BA_MENU
             bool "JD9165BA"
             select JD9165BA
+
+        config AXS15260_MIPI_MENU
+            bool "AXS15260_mipi"
+            select AXS15260_MIPI
     endchoice
 endmenu
 
@@ -65,4 +69,7 @@ config ST7701P_RGB
 bool
 
 config JD9165BA
+bool
+
+config AXS15260_MIPI
 bool
