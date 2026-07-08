@@ -1,3 +1,5 @@
 include(lvgl.cmake)
-ameba_add_subdirectories(lv_drivers)
-ameba_add_subdirectories(demos)
+ameba_add_subdirectory(hal)
+ameba_add_subdirectory(libs)
+ameba_add_subdirectory(platform)
+ameba_add_subdirectories(apps)

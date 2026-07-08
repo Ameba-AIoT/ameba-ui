@@ -53,6 +53,18 @@ ameba_list_append(private_sources
     pngwtran.c
 )
 
+if(CONFIG_NEON)
+    ameba_list_append(private_sources
+        arm/arm_init.c
+        arm/filter_neon_intrinsics.c
+        arm/palette_neon_intrinsics.c
+    )
+    ameba_list_append(private_compile_options
+        -mfpu=neon
+        -march=armv7-a
+    )
+endif()
+
 ameba_list_append(private_includes
     ${c_CMPT_UI_DIR}/third_party/zlib
 )

@@ -24,7 +24,7 @@
 
 #define LOG_TAG "panel_st7701p_rgb"
 
-static const uint8_t st7701p_rgb_init_cmds[][32] = {
+static const uint8_t st7701p_rgb_init_cmds[][64] = {
     {0x00, 0x00, 0x00},
 };
 
@@ -182,6 +182,7 @@ panel_desc_t st7701p_rgb_desc = {
 
     .interface = PANEL_IF_RGB,
     .rgb_format = PANEL_RGB_FORMAT_RGB888,
+    .lane_count = 2,
 
     .timing = st7701p_rgb_timing,
     .gpio_config = NULL,

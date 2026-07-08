@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef AMEBA_UI_LVGL_LV_DRIVERS_PANEL_SPI_INIT_H
-#define AMEBA_UI_LVGL_LV_DRIVERS_PANEL_SPI_INIT_H
+#ifndef AMEBA_UI_DISPLAY_PANELS_PANEL_SPI_INIT_H
+#define AMEBA_UI_DISPLAY_PANELS_PANEL_SPI_INIT_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -28,4 +28,4 @@ void spi_write_data(spi_t *spi,u16 data);
 
 void spi_driver_init(spi_t *spi, panel_spi_config_t *spi_config);
 
-#endif // AMEBA_UI_LVGL_LV_DRIVERS_PANEL_SPI_INIT_H
+#endif // AMEBA_UI_DISPLAY_PANELS_PANEL_SPI_INIT_H

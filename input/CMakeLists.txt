@@ -39,8 +39,18 @@ set(private_compile_options)         #private compile_options
 
 ameba_list_append(private_sources
     input_manager.c
+)
+
+ameba_list_append_if(CONFIG_TOUCH_GT911 private_sources
     input_touch_gt911.c
+)
+
+ameba_list_append_if(CONFIG_TOUCH_CST328 private_sources
     input_touch_cst328.c
+)
+
+ameba_list_append_if(CONFIG_TOUCH_TDDI private_sources
+    input_touch_tddi.c
 )
 
 ameba_list_append(private_compile_options

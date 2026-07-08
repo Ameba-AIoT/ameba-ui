@@ -31,7 +31,9 @@
 
 #define DEBUG_PURE 0
 
-#if defined(CONFIG_ST7701S_MIPI) && CONFIG_ST7701S_MIPI
+#if defined(CONFIG_ST7102_MIPI) && CONFIG_ST7102_MIPI
+#define SELECTED_PANEL_NAME "st7102_mipi_480x480"
+#elif defined(CONFIG_ST7701S_MIPI) && CONFIG_ST7701S_MIPI
 #define SELECTED_PANEL_NAME "st7701s_mipi_480x800"
 #elif defined(CONFIG_ST7701S) && CONFIG_ST7701S
 #define SELECTED_PANEL_NAME "st7701s_rgb_800x480"
@@ -47,6 +49,8 @@
 #define SELECTED_PANEL_NAME "t1720a_800x480"
 #elif defined(CONFIG_JD9165BA) && CONFIG_JD9165BA
 #define SELECTED_PANEL_NAME "jd9165ba_1024x600"
+#elif defined(CONFIG_AXS15260_MIPI) && CONFIG_AXS15260_MIPI
+#define SELECTED_PANEL_NAME "axs15260_mipi_540x1260"
 #else
 #define SELECTED_PANEL_NAME "unknown"
 #endif
@@ -89,7 +93,9 @@ void fillPureBlueBuffer(uint32_t* buffer, int total_pixels) {
 void display_mode_pure_color(int32_t color_depth) {
     size_t buffer_size = 0;
     size_t total_pixels = 0;
-    if (!strcmp(SELECTED_PANEL_NAME, "st7701s_mipi_480x800")) {
+    if (!strcmp(SELECTED_PANEL_NAME, "st7102_mipi_480x480")) {
+        total_pixels = 480 * 480;
+    } else if (!strcmp(SELECTED_PANEL_NAME, "st7701s_mipi_480x800")) {
         total_pixels = 480 * 800;
     } else if (!strcmp(SELECTED_PANEL_NAME, "st7701s_rgb_800x480")) {
         total_pixels = 800 * 480;
@@ -105,6 +111,8 @@ void display_mode_pure_color(int32_t color_depth) {
         total_pixels = 800 * 480;
     } else if (!strcmp(SELECTED_PANEL_NAME, "jd9165ba_1024x600")) {
         total_pixels = 1024 * 600;
+    } else if (!strcmp(SELECTED_PANEL_NAME, "axs15260_mipi_540x1260")) {
+        total_pixels = 540 * 1260;
     } else {
         RTK_LOGS(LOG_TAG, RTK_LOG_INFO, "unsupported panel\n");
         return;
@@ -139,6 +147,10 @@ bool display_mode_init(int32_t color_depth) {
     panel_configure_pinmux(SELECTED_PANEL_NAME);
 
     // 2. register all panels available.
+
+    extern bool panel_st7102_mipi_register(void);
+    panel_st7102_mipi_register();
+
     extern bool panel_st7701s_mipi_register(void);
     panel_st7701s_mipi_register();
 
@@ -162,6 +174,9 @@ bool display_mode_init(int32_t color_depth) {
 
     extern bool panel_jd9165ba_register(void);
     panel_jd9165ba_register();
+
+    extern bool panel_axs15260_mipi_register(void);
+    panel_axs15260_mipi_register();
 
     // 3. list all registered panels.
     panel_list_all();

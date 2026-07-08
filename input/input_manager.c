@@ -28,8 +28,15 @@ static input_device_t *s_devices[MAX_INPUT_DEVICES];
 static int s_device_count = 0;
 static input_event_callback_t s_global_callback = NULL;
 
+#ifdef CONFIG_TOUCH_GT911
 extern input_device_t *input_touch_gt911_init(void);
+#endif
+#ifdef CONFIG_TOUCH_CST328
 extern input_device_t *input_touch_cst328_init(void);
+#endif
+#ifdef CONFIG_TOUCH_TDDI
+extern input_device_t *input_touch_tddi_init(void);
+#endif
 
 static void input_dispatch_event(input_event_t *event) {
     if (s_global_callback) {
@@ -42,17 +49,29 @@ void input_manager_init(void) {
     memset(s_devices, 0, sizeof(s_devices));
     s_device_count = 0;
 
+#ifdef CONFIG_TOUCH_GT911
     input_device_t *gt911_dev = input_touch_gt911_init();
     if (gt911_dev) {
         input_device_register(gt911_dev);
         gt911_dev->register_callback(input_dispatch_event);
     }
+#endif
 
+#ifdef CONFIG_TOUCH_CST328
     input_device_t *cst328_dev = input_touch_cst328_init();
     if (cst328_dev) {
         input_device_register(cst328_dev);
         cst328_dev->register_callback(input_dispatch_event);
     }
+#endif
+
+#ifdef CONFIG_TOUCH_TDDI
+    input_device_t *tddi_dev = input_touch_tddi_init();
+    if (tddi_dev) {
+        input_device_register(tddi_dev);
+        tddi_dev->register_callback(input_dispatch_event);
+    }
+#endif
 }
 
 int input_device_register(input_device_t *dev) {

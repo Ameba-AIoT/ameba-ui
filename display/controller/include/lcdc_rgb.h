@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef AMEBA_UI_DISPLAYER_CONTROLLER_LCDC_RGB_H
-#define AMEBA_UI_DISPLAYER_CONTROLLER_LCDC_RGB_H
+#ifndef AMEBA_UI_DISPLAY_CONTROLLER_INCLUDE_LCDC_RGB_H
+#define AMEBA_UI_DISPLAY_CONTROLLER_INCLUDE_LCDC_RGB_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -27,4 +27,4 @@ bool lcdc_rgb_controller_init(int32_t color_depth, panel_dev_t *panel);
 void lcdc_rgb_do_page_flip(uint8_t *buffer);
 void lcdc_rgb_register_vblank_callback(display_driver_callback_t *event);
 
-#endif // AMEBA_UI_DISPLAYER_CONTROLLER_LCDC_RGB_H
+#endif // AMEBA_UI_DISPLAY_CONTROLLER_INCLUDE_LCDC_RGB_H
