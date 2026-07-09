@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef AMEBA_UI_DISPLAYER_CONTROLLER_DISPLAY_CONTROLLER_H
-#define AMEBA_UI_DISPLAYER_CONTROLLER_DISPLAY_CONTROLLER_H
+#ifndef AMEBA_UI_DISPLAY_CONTROLLER_INCLUDE_DISPLAY_CONTROLLER_H
+#define AMEBA_UI_DISPLAY_CONTROLLER_INCLUDE_DISPLAY_CONTROLLER_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -47,4 +47,4 @@ bool controller_init_with_panel(int32_t color_depth, panel_dev_t *panel);
 void controller_do_page_flip(uint8_t *buffer);
 void controller_register_vblank_callback(display_driver_callback_t *event);
 
-#endif // AMEBA_UI_DISPLAYER_CONTROLLER_DISPLAY_CONTROLLER_H
+#endif // AMEBA_UI_DISPLAY_CONTROLLER_INCLUDE_DISPLAY_CONTROLLER_H

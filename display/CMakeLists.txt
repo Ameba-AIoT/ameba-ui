@@ -45,10 +45,12 @@ ameba_list_append(private_sources
     panels/panel_st7701s.c
     panels/panel_st7701s_rgb565.c
     panels/panel_st7701p_rgb.c
+    panels/panel_st7102_mipi.c
     panels/panel_hj3508_12.c
     panels/panel_b1620a.c
     panels/panel_t1720a.c
     panels/panel_jd9165ba.c
+    panels/panel_axs15260_mipi.c
     panels/panel_spi_init.c
     controller/spi/spi_only.c
 )

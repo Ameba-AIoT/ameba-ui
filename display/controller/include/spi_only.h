@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef AMEBA_UI_DISPLAYER_CONTROLLER_SPI_ONLY_H
-#define AMEBA_UI_DISPLAYER_CONTROLLER_SPI_ONLY_H
+#ifndef AMEBA_UI_DISPLAY_CONTROLLER_INCLUDE_SPI_ONLY_H
+#define AMEBA_UI_DISPLAY_CONTROLLER_INCLUDE_SPI_ONLY_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -27,4 +27,4 @@ bool spi_only_controller_init(int32_t color_depth, panel_dev_t *panel);
 void spi_only_do_page_flip(uint8_t *buffer);
 void spi_only_register_vblank_callback(display_driver_callback_t *event);
 
-#endif // AMEBA_UI_DISPLAYER_CONTROLLER_SPI_ONLY_H
+#endif // AMEBA_UI_DISPLAY_CONTROLLER_INCLUDE_SPI_ONLY_H
