@@ -24,7 +24,7 @@ ameba_list_append(private_sources
     lv_port.c
 )
 
-if(CONFIG_AMEBASMART OR CONFIG_AMEBAGREEN2)
+if(CONFIG_TOUCH_ENABLE)
     ameba_list_append(private_sources
         lv_port_touch.c
     )
