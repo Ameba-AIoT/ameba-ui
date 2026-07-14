@@ -21,30 +21,32 @@ set(private_compile_options)
 # Component private part, user config begin
 
 ameba_list_append(private_sources
-    lv_port.c
+    app_example.c
+    ../../../../../ui/frameworks/tests/image_decoder/test_visual_decoder.c
 )
-
-if(CONFIG_TOUCH_ENABLE)
-    ameba_list_append(private_sources
-        lv_port_touch.c
-    )
-endif()
 
 ameba_list_append(private_includes
-    .
-    ../lvgl
-    ../hal/include/common
-    ../../../display
-    ../../../input
+    ../../platform
+    ../../../../../ui/frameworks/interfaces
+    ../../../../../ui/frameworks/tests/image_decoder/
+    ../../../../../ui/frameworks/tests/image_decoder/assets
 )
 
-# drm/core/ is already a global include when CONFIG_DISPLAY_DRM=y
-# (exported by drm/CMakeLists.txt public_includes)
+# Mirror the HAS_* definitions used by the graphics library so that
+# #ifdef HAS_JPEG / HAS_PNG / HAS_QOI guards in the demo code work.
+ameba_list_append_if(CONFIG_LIBJPEG_TURBO_ENABLE  private_definitions HAS_JPEG)
+ameba_list_append_if(CONFIG_LIBPNG_ENABLE         private_definitions HAS_PNG)
+ameba_list_append_if(CONFIG_QOI_ENABLE            private_definitions HAS_QOI)
+ameba_list_append_if(CONFIG_IMAGE_DECODER_RLE     private_definitions HAS_RLE)
 
-# Component private part, user config end
+ameba_list_append(private_compile_options
+    -Wno-unused-parameter
+)
+
+# Component private part, user end
 #------------------------------#
 
-ameba_add_internal_library(lv_port
+ameba_add_internal_library(lv_demo_image_decoder
     p_SOURCES
         ${private_sources}
     p_INCLUDES

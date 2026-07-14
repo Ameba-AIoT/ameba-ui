@@ -25,7 +25,7 @@
 
 #include "display_mode_setting.h"
 
-#ifdef CONFIG_AMEBASMART
+#if defined(CONFIG_TOUCH_ENABLE)
 #include "lv_port_touch.h"
 #endif
 
@@ -291,7 +291,7 @@ static void lvgl_task(void *param) {
     }
     RTK_LOGI(LOG_TAG, "lv_port_init returned OK\n");
 
-#ifdef CONFIG_AMEBASMART
+#if defined(CONFIG_TOUCH_ENABLE)
     RTK_LOGI(LOG_TAG, "calling lv_port_touch_init\n");
     lv_port_touch_init();
     RTK_LOGI(LOG_TAG, "lv_port_touch_init done\n");
