@@ -67,6 +67,7 @@ struct tddi_data {
     rtos_queue_t work_queue;
     bool initialized;
     bool enabled;
+    bool pressed;
     u16 x;
     u16 y;
 };
@@ -225,29 +226,16 @@ static void tddi_process_touch_data(struct tddi_data *ts)
     bool touch_found = false;
     u16 input_x = 0;
     u16 input_y = 0;
+    input_event_t event = {0};
+    bool should_report = false;
 
     rtos_mutex_take(ts->lock, MUTEX_WAIT_TIMEOUT);
 
-    {
-        u8 val;
-        if (tddi_read_reg(&ts->client, 0x04, &val) >= 0) {
-            RTK_LOGD(LOG_TAG, "Process: reg 0x04 = 0x%02X\n", val);
-        } else {
-            RTK_LOGD(LOG_TAG, "Process: reg 0x04 read FAILED\n");
-        }
-    }
-
-    RTK_LOGD(LOG_TAG, "Process: reading TOUCH_INFO(0x10) len=%d\n", read_len);
     ret = tddi_i2c_read(&ts->client, ST_REG_TOUCH_INFO, buf, read_len);
     if (ret < 0) {
         RTK_LOGW(LOG_TAG, "%s: Read TOUCH_INFO fail\n", __func__);
         goto err_finish;
     }
-
-    RTK_LOGD(LOG_TAG, "Process: RAW buf: %02X %02X %02X %02X %02X %02X %02X %02X ...\n",
-             buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
-    RTK_LOGD(LOG_TAG, "Process: header=0x%02X (ESD=%d, prox=%d)\n",
-             buf[0], (buf[0] & 0x80) ? 1 : 0, (buf[0] >> 4) & 0x07);
 
     /* Parse touch points, 7 bytes each starting at offset 4.
      * Coordinate sanity check: reject points outside the valid display area
@@ -255,59 +243,47 @@ static void tddi_process_touch_data(struct tddi_data *ts)
     for (i = 0; i < TPD_MAX_FINGERS; i++) {
         u8 *p = &buf[4 + i * 7];
 
-        RTK_LOGD(LOG_TAG, "Process: point[%d]: %02X %02X %02X %02X %02X %02X %02X (active=%d)\n",
-                 i, p[0], p[1], p[2], p[3], p[4], p[5], p[6], (*p & 0x80) ? 1 : 0);
-
         if (*p & 0x80) {
-            /* Touch point is active */
             input_x = (u16)(((u16)(*p & 0x3F) << 8) | (u16)*(p + 1));
             input_y = (u16)(((u16)(*(p + 2) & 0x3F) << 8) | (u16)*(p + 3));
 
-            /* Reject coordinates outside valid range (garbage filtering) */
             if (input_x >= XSIZE || input_y >= YSIZE) {
-                RTK_LOGD(LOG_TAG, "Process: point[%d] OUT OF RANGE (%d,%d), skipping\n",
-                         i, input_x, input_y);
                 continue;
             }
-
-            RTK_LOGD(LOG_TAG, "Process: TOUCH point[%d] x=%d y=%d\n", i, input_x, input_y);
 
             ts->x = input_x;
             ts->y = input_y;
             touch_found = true;
-            break; /* Report first valid touch only (single-touch mode) */
+            break;
         }
     }
 
+    event.type = INPUT_EVENT_TOUCH;
+    event.data.touch.touch_id = 0;
+
     if (touch_found) {
-        RTK_LOGD(LOG_TAG, "Process: reporting TOUCH PRESS (%d, %d)\n", ts->x, ts->y);
-        if (s_user_cb) {
-            input_event_t event;
-            event.type = INPUT_EVENT_TOUCH;
-            event.timestamp = 0;
-            event.data.touch.x = ts->x;
-            event.data.touch.y = ts->y;
-            event.data.touch.pressed = 1;
-            event.data.touch.touch_id = 0;
-            s_user_cb(&event);
-        }
-    } else {
-        RTK_LOGD(LOG_TAG, "Process: no touch points, reporting RELEASE\n");
-        /* No touch points active - send release if we were pressed */
-        if (s_user_cb) {
-            input_event_t event;
-            event.type = INPUT_EVENT_TOUCH;
-            event.timestamp = 0;
-            event.data.touch.x = ts->x;
-            event.data.touch.y = ts->y;
-            event.data.touch.pressed = 0;
-            event.data.touch.touch_id = 0;
-            s_user_cb(&event);
-        }
+        event.data.touch.x = ts->x;
+        event.data.touch.y = ts->y;
+        event.data.touch.pressed = 1;
+        ts->pressed = true;
+        should_report = true;
+        RTK_LOGD(LOG_TAG, "Process: PRESS (%d, %d)\n", ts->x, ts->y);
+    } else if (ts->pressed) {
+        /* Only send release once when transitioning from pressed to no touch */
+        event.data.touch.x = ts->x;
+        event.data.touch.y = ts->y;
+        event.data.touch.pressed = 0;
+        ts->pressed = false;
+        should_report = true;
+        RTK_LOGD(LOG_TAG, "Process: RELEASE (%d, %d)\n", ts->x, ts->y);
     }
 
 err_finish:
     rtos_mutex_give(ts->lock);
+
+    if (should_report && s_user_cb) {
+        s_user_cb(&event);
+    }
 }
 
 static int tddi_work_handler(struct tddi_data *ts)
