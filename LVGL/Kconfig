@@ -54,7 +54,14 @@ menu "Graphics Library Selection"
                     bool "lv demo benchmark"
                     help
                         Benchmark your system
+
+                config LV_DEMO_IMAGE_DECODER
+                    bool "lv demo image decoder"
+                    select APP_FRAMEWORKS_ENABLE
+                    help
+                        Visual decoder demo: displays BMP/JPEG/PNG/QOI decoded on screen.
             endchoice
         endif
+
     endif
 endmenu
