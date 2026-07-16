@@ -1,19 +1,28 @@
 menu "Touch Controller Selection"
-    choice
-        prompt "Select Touch Controller"
-        default TOUCH_CST328_MENU
-        config TOUCH_CST328_MENU
-            bool "CST328"
-            select TOUCH_CST328
+    config TOUCH_ENABLE
+        bool "Enable Touch Screen"
+        default n
+        help
+            Enable touchscreen support.
+            When disabled, no touch controller is compiled in.
 
-        config TOUCH_GT911_MENU
-            bool "GT911"
-            select TOUCH_GT911
+    if TOUCH_ENABLE
+        choice
+            prompt "Select Touch Controller"
+            default TOUCH_CST328_MENU
+            config TOUCH_CST328_MENU
+                bool "CST328"
+                select TOUCH_CST328
 
-        config TOUCH_TDDI_MENU
-            bool "TDDI"
-            select TOUCH_TDDI
-    endchoice
+            config TOUCH_GT911_MENU
+                bool "GT911"
+                select TOUCH_GT911
+
+            config TOUCH_TDDI_MENU
+                bool "TDDI"
+                select TOUCH_TDDI
+        endchoice
+    endif
 endmenu
 
 config TOUCH_CST328

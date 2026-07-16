@@ -9,6 +9,8 @@ menu "Panel Selection"
         config ST7701S_MIPI_MENU
             bool "St7701s_mipi"
             select ST7701S_MIPI
+            select TOUCH_ENABLE
+            select TOUCH_CST328
 
         config ST7701S_MENU
             bool "St7701s"
