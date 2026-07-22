@@ -322,58 +322,27 @@ static void lcdc_display_init(const panel_timing_t *panel_timing)
 static bool mipi_init(const panel_timing_t *panel_timing, uint32_t lane_count) {
     MIPI_StructInit(&lcdc_context.mipi_init_struct);
 
-    u32 bit_per_pixel;
-    switch (lcdc_context.mipi_init_struct.MIPI_VideoDataFormat)
-    {
-    case MIPI_VIDEO_DATA_FORMAT_RGB565:
-        bit_per_pixel = 16;
-        break;
-    case MIPI_VIDEO_DATA_FORMAT_RGB666_PACKED:
-        bit_per_pixel = 18;
-        break;
-    case MIPI_VIDEO_DATA_FORMAT_RGB666_LOOSELY:
-    case MIPI_VIDEO_DATA_FORMAT_RGB888:
-    default:
-        bit_per_pixel = 24;
-        break;
-    }
-
     lcdc_context.mipi_init_struct.MIPI_LaneNum = lane_count;
     lcdc_context.mipi_init_struct.MIPI_FrameRate = panel_timing->clock_frequency;
 
-    lcdc_context.mipi_init_struct.MIPI_HSA = panel_timing->hsync_pulse_width * bit_per_pixel / 8 ;//- 10; /* here the unit is pixel but not us */
-    if (lcdc_context.mipi_init_struct.MIPI_VideoModeInterface == MIPI_VIDEO_NON_BURST_MODE_WITH_SYNC_PULSES) {
-        lcdc_context.mipi_init_struct.MIPI_HBP = panel_timing->hsync_back_porch * bit_per_pixel / 8 ;//- 10;
-    } else {
-        lcdc_context.mipi_init_struct.MIPI_HBP = (panel_timing->hsync_pulse_width + panel_timing->hsync_back_porch) * bit_per_pixel / 8 ;//-10 ;
-    }
-
+    /* HSA/HBP/HACT/HFP are now in pixels; the driver converts them to bytes
+     * internally (including merging HSA into HBP for sync-events mode). */
+    lcdc_context.mipi_init_struct.MIPI_HSA = panel_timing->hsync_pulse_width;
+    lcdc_context.mipi_init_struct.MIPI_HBP = panel_timing->hsync_back_porch;
     lcdc_context.mipi_init_struct.MIPI_HACT = panel_timing->width;
-    lcdc_context.mipi_init_struct.MIPI_HFP = panel_timing->hsync_front_porch * bit_per_pixel / 8 ;//-12;
+    lcdc_context.mipi_init_struct.MIPI_HFP = panel_timing->hsync_front_porch;
 
     lcdc_context.mipi_init_struct.MIPI_VSA = panel_timing->vsync_pulse_width;
     lcdc_context.mipi_init_struct.MIPI_VBP = panel_timing->vsync_back_porch;
     lcdc_context.mipi_init_struct.MIPI_VACT = panel_timing->height;
     lcdc_context.mipi_init_struct.MIPI_VFP = panel_timing->vsync_front_porch;
 
-    /*DataLaneFreq * LaneNum = FrameRate * (VSA+VBP+VACT+VFP) * (HSA+HBP+HACT+HFP) * PixelFromat*/
-    u32 vtotal = lcdc_context.mipi_init_struct.MIPI_VSA + lcdc_context.mipi_init_struct.MIPI_VBP + lcdc_context.mipi_init_struct.MIPI_VACT + lcdc_context.mipi_init_struct.MIPI_VFP;
-    u32 htotal_bits = (panel_timing->hsync_pulse_width + panel_timing->hsync_back_porch + lcdc_context.mipi_init_struct.MIPI_HACT + panel_timing->hsync_front_porch) * bit_per_pixel;
-    u32 overhead_cycles = T_LPX + T_HS_PREP + T_HS_ZERO + T_HS_TRAIL + T_HS_EXIT;
-    u32 overhead_bits = overhead_cycles * lcdc_context.mipi_init_struct.MIPI_LaneNum * 8;
-    u32 total_bits = htotal_bits + overhead_bits;
-
-    lcdc_context.mipi_init_struct.MIPI_VideDataLaneFreq = lcdc_context.mipi_init_struct.MIPI_FrameRate * total_bits * vtotal / lcdc_context.mipi_init_struct.MIPI_LaneNum / Mhz + 20;
-
-    lcdc_context.mipi_init_struct.MIPI_LineTime = (lcdc_context.mipi_init_struct.MIPI_VideDataLaneFreq * Mhz) / 8 / lcdc_context.mipi_init_struct.MIPI_FrameRate / vtotal;
-    lcdc_context.mipi_init_struct.MIPI_BllpLen = lcdc_context.mipi_init_struct.MIPI_LineTime / 2;
+    /* Per-line DPHY overhead cycles (T_LPX+T_HS_PREP+T_HS_ZERO+T_HS_TRAIL+T_HS_EXIT).
+     * MIPI_VideDataLaneFreq / MIPI_LineTime are now computed inside MIPI_Init(). */
+    lcdc_context.mipi_init_struct.MIPI_DphyOverheadCyc = T_LPX + T_HS_PREP + T_HS_ZERO + T_HS_TRAIL + T_HS_EXIT;
 
     if (panel_timing->hsync_pulse_width + panel_timing->hsync_back_porch + panel_timing->width + panel_timing->hsync_front_porch < (512 + MIPI_DSI_RTNI * 16)) {
         RTK_LOGS(LOG_TAG, RTK_LOG_ERROR, "!!ERROR!!, LCM NOT SUPPORT\n");
-    }
-
-    if (lcdc_context.mipi_init_struct.MIPI_LineTime * lcdc_context.mipi_init_struct.MIPI_LaneNum < total_bits / 8) {
-        RTK_LOGS(LOG_TAG, RTK_LOG_ERROR,"!!ERROR!!, LINE TIME TOO SHORT!\n");
     }
 
     MIPI_Init(MIPI, &lcdc_context.mipi_init_struct);
