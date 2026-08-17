@@ -43,6 +43,12 @@ menu "Panel Selection"
         config AXS15260_MIPI_MENU
             bool "AXS15260_mipi"
             select AXS15260_MIPI
+
+        config GH7002_MENU
+            select TOUCH_ENABLE
+            select TOUCH_GT9XX
+            bool "Gh7002"
+            select GH7002
     endchoice
 endmenu
 
@@ -74,4 +80,7 @@ config JD9165BA
 bool
 
 config AXS15260_MIPI
+bool
+
+config GH7002
 bool

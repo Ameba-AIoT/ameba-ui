@@ -48,6 +48,8 @@ static inline int32_t display_mode_get_width(void) {
     return 1024;
 #elif defined(CONFIG_AXS15260_MIPI) && CONFIG_AXS15260_MIPI
     return 540;
+#elif defined(CONFIG_GH7002) && CONFIG_GH7002
+    return 1024;
 #else
     //RTK_LOGE(LOG_TAG, "Unsupported panel:%ld\n");
     return 0;
@@ -75,6 +77,8 @@ static inline int32_t display_mode_get_height(void) {
     return 600;
 #elif defined(CONFIG_AXS15260_MIPI) && CONFIG_AXS15260_MIPI
     return 1260;
+#elif defined(CONFIG_GH7002) && CONFIG_GH7002
+    return 600;
 #else
     //RTK_LOGE(LOG_TAG, "Unsupported panel:%ld\n");
     return 0;
