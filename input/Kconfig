@@ -18,6 +18,10 @@ menu "Touch Controller Selection"
                 bool "GT911"
                 select TOUCH_GT911
 
+            config TOUCH_GT9XX_MENU
+                bool "GT9XX"
+                select TOUCH_GT9XX
+
             config TOUCH_TDDI_MENU
                 bool "TDDI"
                 select TOUCH_TDDI
@@ -29,6 +33,9 @@ config TOUCH_CST328
     bool
 
 config TOUCH_GT911
+    bool
+
+config TOUCH_GT9XX
     bool
 
 config TOUCH_TDDI

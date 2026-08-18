@@ -25,6 +25,8 @@
 #define TOUCH_DEV   "tddi"
 #elif defined(CONFIG_TOUCH_GT911)
 #define TOUCH_DEV   "gt911"
+#elif defined(CONFIG_TOUCH_GT9XX)
+#define TOUCH_DEV   "gt9xx"
 #else
 #define TOUCH_DEV   "cst328"
 #endif

@@ -31,6 +31,9 @@ static input_event_callback_t s_global_callback = NULL;
 #ifdef CONFIG_TOUCH_GT911
 extern input_device_t *input_touch_gt911_init(void);
 #endif
+#ifdef CONFIG_TOUCH_GT9XX
+extern input_device_t *input_touch_gt9xx_init(void);
+#endif
 #ifdef CONFIG_TOUCH_CST328
 extern input_device_t *input_touch_cst328_init(void);
 #endif
@@ -54,6 +57,14 @@ void input_manager_init(void) {
     if (gt911_dev) {
         input_device_register(gt911_dev);
         gt911_dev->register_callback(input_dispatch_event);
+    }
+#endif
+
+#ifdef CONFIG_TOUCH_GT9XX
+    input_device_t *gt9xx_dev = input_touch_gt9xx_init();
+    if (gt9xx_dev) {
+        input_device_register(gt9xx_dev);
+        gt9xx_dev->register_callback(input_dispatch_event);
     }
 #endif
 
