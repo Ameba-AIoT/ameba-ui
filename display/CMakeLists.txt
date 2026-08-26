@@ -51,6 +51,7 @@ ameba_list_append(private_sources
     panels/panel_t1720a.c
     panels/panel_jd9165ba.c
     panels/panel_axs15260_mipi.c
+    panels/panel_gh7002.c
     panels/panel_spi_init.c
     controller/spi/spi_only.c
 )

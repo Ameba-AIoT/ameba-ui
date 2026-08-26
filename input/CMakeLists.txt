@@ -45,6 +45,10 @@ ameba_list_append_if(CONFIG_TOUCH_GT911 private_sources
     input_touch_gt911.c
 )
 
+ameba_list_append_if(CONFIG_TOUCH_GT9XX private_sources
+    input_touch_gt9xx.c
+)
+
 ameba_list_append_if(CONFIG_TOUCH_CST328 private_sources
     input_touch_cst328.c
 )
