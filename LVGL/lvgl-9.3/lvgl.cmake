@@ -58,20 +58,30 @@ if(CONFIG_AMEBASMART AND CONFIG_NEON)
     )
 endif()
 
-file(GLOB_RECURSE LVGL_DEMOS
-    "lvgl/demos/**/*.c"
-    "lvgl/demos/*.c"
-)
-
-file(GLOB_RECURSE LVGL_EXAMPLES
-    "lvgl/examples/anim/*.c"
-)
-
 ameba_list_append(private_sources
     ${LVGL_SRCS}
-    ${LVGL_DEMOS}
-    ${LVGL_EXAMPLES}
 )
+
+if(CONFIG_LV_DEMO_WIDGETS)
+    file(GLOB_RECURSE LVGL_DEMO_WIDGETS "lvgl/demos/widgets/*.c")
+    ameba_list_append(private_sources ${LVGL_DEMO_WIDGETS})
+endif()
+
+if(CONFIG_LV_DEMO_STRESS)
+    file(GLOB_RECURSE LVGL_DEMO_STRESS "lvgl/demos/stress/*.c")
+    ameba_list_append(private_sources ${LVGL_DEMO_STRESS})
+endif()
+
+if(CONFIG_LV_DEMO_MUSIC)
+    file(GLOB_RECURSE LVGL_DEMO_MUSIC "lvgl/demos/music/*.c")
+    ameba_list_append(private_sources ${LVGL_DEMO_MUSIC})
+endif()
+
+if(CONFIG_LV_DEMO_BENCHMARK)
+    file(GLOB_RECURSE LVGL_DEMO_BENCHMARK "lvgl/demos/benchmark/*.c")
+    file(GLOB_RECURSE LVGL_DEMO_WIDGETS "lvgl/demos/widgets/*.c")
+    ameba_list_append(private_sources ${LVGL_DEMO_BENCHMARK} ${LVGL_DEMO_WIDGETS})
+endif()
 
 ameba_list_append(private_includes
     config/${c_SOC_TYPE}
