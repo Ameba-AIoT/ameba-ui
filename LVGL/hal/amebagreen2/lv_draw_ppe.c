@@ -18,7 +18,18 @@
 #include "ameba_ppe.h"
 
 #include "lvgl.h"
+#include "lvgl_private.h"
 #include "lv_draw_ppe.h"
+
+/* LVGL 9.5 moved or renamed a few draw internals this file relies on.
+ * Every version difference of this file is confined to this block. */
+#if LVGL_VERSION_MAJOR > 9 || (LVGL_VERSION_MAJOR == 9 && LVGL_VERSION_MINOR >= 5)
+#define PPE_LVGL_GE_9_5         1
+#define PPE_TASK_STATE_DONE     LV_DRAW_TASK_STATE_FINISHED
+#else
+#define PPE_LVGL_GE_9_5         0
+#define PPE_TASK_STATE_DONE     LV_DRAW_TASK_STATE_READY
+#endif
 
 #include "src/misc/lv_types.h"
 #include "src/draw/lv_draw.h"
@@ -26,7 +37,11 @@
 #include "src/misc/lv_area_private.h"
 #include "src/draw/lv_draw_image_private.h"
 #include "src/draw/lv_image_decoder_private.h"
+#if PPE_LVGL_GE_9_5
+#include "src/draw/lv_draw_mask.h"          /* 9.5: lv_draw_mask_rect_dsc_t became public */
+#else
 #include "src/draw/lv_draw_mask_private.h"
+#endif
 #include "src/draw/sw/blend/lv_draw_sw_blend_private.h"
 #include "src/draw/sw/lv_draw_sw.h"
 #include "src/draw/lv_draw_image.h"
@@ -267,7 +282,7 @@ static int32_t _ppe_dispatch(lv_draw_unit_t *draw_unit, lv_layer_t *layer)
     }
 #else
     _ppe_execute_drawing(u);
-    u->task_act->state = LV_DRAW_TASK_STATE_READY;
+    u->task_act->state = PPE_TASK_STATE_DONE;
     u->task_act = NULL;
     lv_draw_dispatch_request();
 #endif
@@ -340,8 +355,8 @@ static void _ppe_draw_fill(lv_draw_task_t *t)
 #if TIME_DEBUG
         end = rtos_time_get_current_system_time_ns();
         time_used = end - start;
-        RTK_LOGI(LOG_TAG, "SW Fill (at:%ld-%ld, w:%lu, h:%lu), opa=%d, Time used: %lld ns\n",
-            draw_area.x1, draw_area.y1, fill_width, fill_height, dsc->opa, time_used);
+        RTK_LOGI(LOG_TAG, "SW Fill (at:%d-%d w:%u h:%u) opa=%d Time:%u ns\n",
+            (int)draw_area.x1, (int)draw_area.y1, (unsigned)fill_width, (unsigned)fill_height, dsc->opa, (unsigned)time_used);
 #endif
         return;
     }
@@ -368,8 +383,8 @@ static void _ppe_draw_fill(lv_draw_task_t *t)
 #if TIME_DEBUG
     end = rtos_time_get_current_system_time_ns();
     time_used = end - start;
-    RTK_LOGI(LOG_TAG, "PPE Fill (%-3ld %-3ld %-3lu %-3lu) Time:%8lld, opa=%d\n",
-        draw_area.x1, draw_area.y1, fill_width, fill_height, time_used, dsc->opa);
+    RTK_LOGI(LOG_TAG, "PPE Fill (%d %d %u %u) Time:%u opa=%d\n",
+        (int)draw_area.x1, (int)draw_area.y1, (unsigned)fill_width, (unsigned)fill_height, (unsigned)time_used, dsc->opa);
 #endif
 }
 
@@ -460,9 +475,9 @@ static void _ppe_img_draw_core(lv_draw_task_t *t,
 #if TIME_DEBUG
     end = rtos_time_get_current_system_time_ns();
     time_used = end - start;
-    RTK_LOGI(LOG_TAG, "PPE Imag (%-3ld %-3ld %-3lu %-3lu) Time:%8lld, cf:%lu-%d offset:%lu, layer:%d\n",
-        layer->buf_area.x1, layer->buf_area.y1, target_width, target_height,
-        time_used, img_cf, layer->all_tasks_added, dest_offset, (int)draw_dsc->base.user_data);
+    RTK_LOGI(LOG_TAG, "PPE Imag (%d %d %u %u) Time:%u cf:%u-%d offset:%u layer:%d\n",
+        (int)layer->buf_area.x1, (int)layer->buf_area.y1, (unsigned)target_width, (unsigned)target_height,
+        (unsigned)time_used, (unsigned)img_cf, (int)layer->all_tasks_added, (unsigned)dest_offset, (int)draw_dsc->base.user_data);
 #endif
 }
 
@@ -470,9 +485,18 @@ static void lv_draw_ppe_image(lv_draw_task_t *t, const lv_draw_image_dsc_t *draw
     const lv_area_t *coords)
 {
     if(!draw_dsc->tile) {
+#if PPE_LVGL_GE_9_5
+        /* 9.5 added a trailing "decoded area" argument to both helpers. */
+        lv_draw_image_normal_helper(t, draw_dsc, coords, _ppe_img_draw_core, NULL);
+#else
         lv_draw_image_normal_helper(t, draw_dsc, coords, _ppe_img_draw_core);
+#endif
     } else {
+#if PPE_LVGL_GE_9_5
+        lv_draw_image_tiled_helper(t, draw_dsc, coords, _ppe_img_draw_core, NULL);
+#else
         lv_draw_image_tiled_helper(t, draw_dsc, coords, _ppe_img_draw_core);
+#endif
     }
 }
 
@@ -534,8 +558,8 @@ static void _ppe_draw_line(lv_draw_task_t *t)
 #if TIME_DEBUG
     end = rtos_time_get_current_system_time_ns();
     time_used = end - start;
-    RTK_LOGI(LOG_TAG, "PPE Line (%-3ld %-3ld %-3lu %-3lu) Time:%8lld\n",
-        draw_area.x1, draw_area.y1, line_width, line_height, time_used);
+    RTK_LOGI(LOG_TAG, "PPE Line (%d %d %u %u) Time:%u\n",
+        (int)draw_area.x1, (int)draw_area.y1, (unsigned)line_width, (unsigned)line_height, (unsigned)time_used);
 #endif
 }
 
@@ -593,8 +617,8 @@ static void _ppe_draw_mask_rect(lv_draw_task_t *t)
 #if TIME_DEBUG
     end = rtos_time_get_current_system_time_ns();
     time_used = end - start;
-    RTK_LOGI(LOG_TAG, "PPE Mask (%-3ld %-3ld %-3lu %-3lu) Time:%8lld\n",
-        draw_area.x1, draw_area.y1, draw_buf->header.w, draw_buf->header.h, time_used);
+    RTK_LOGI(LOG_TAG, "PPE Mask (%d %d %u %u) Time:%u\n",
+        (int)draw_area.x1, (int)draw_area.y1, (unsigned)draw_buf->header.w, (unsigned)draw_buf->header.h, (unsigned)time_used);
 #endif
 }
 
@@ -761,7 +785,7 @@ static void _ppe_render_thread_cb(void *ptr)
 
         _ppe_execute_drawing(u);
 
-        u->task_act->state = LV_DRAW_TASK_STATE_READY;
+        u->task_act->state = PPE_TASK_STATE_DONE;
         u->task_act = NULL;
         lv_draw_dispatch_request();
     }
