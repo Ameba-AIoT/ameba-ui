@@ -52,15 +52,28 @@ file(GLOB_RECURSE LVGL_SRCS
     "lvgl/src/libs/libjpeg_turbo/lv_libjpeg_turbo.c"
 )
 
+# 9.5 rewrote the SW NEON blend from hand-written assembly (9.3's lv_blend_neon.S)
+# to C intrinsics, which the GLOB above would pull in on every SoC. Drop them and
+# add them back under the same condition 9.3 uses. This only decides whether the
+# files reach the compiler; whether they emit code is decided separately by
+# LV_USE_DRAW_SW_ASM in config/<soc>/lv_conf.h (only amebasmart selects NEON).
+list(FILTER LVGL_SRCS EXCLUDE REGEX "lvgl/src/draw/sw/blend/neon/.*\\.c$")
+
 if(CONFIG_AMEBASMART AND CONFIG_NEON)
     ameba_list_append(LVGL_SRCS
-        "lvgl/src/draw/sw/blend/neon/lv_blend_neon.S"
+        "lvgl/src/draw/sw/blend/neon/lv_draw_sw_blend_neon_to_rgb565.c"
+        "lvgl/src/draw/sw/blend/neon/lv_draw_sw_blend_neon_to_rgb888.c"
     )
 endif()
 
 ameba_list_append(private_sources
     ${LVGL_SRCS}
 )
+
+if(CONFIG_LV_DEMO_ENABLE)
+    file(GLOB LVGL_DEMOS_COMMON "lvgl/demos/*.c")
+    ameba_list_append(private_sources ${LVGL_DEMOS_COMMON})
+endif()
 
 if(CONFIG_LV_DEMO_WIDGETS)
     file(GLOB_RECURSE LVGL_DEMO_WIDGETS "lvgl/demos/widgets/*.c")
