@@ -22,14 +22,14 @@ set(private_compile_options)
 
 ameba_list_append(private_sources
     app_example.c
-    ../../../../../ui/frameworks/tests/image_decoder/test_visual_decoder.c
+    ../../../../ui/frameworks/tests/image_decoder/test_visual_decoder.c
 )
 
 ameba_list_append(private_includes
     ../../platform
-    ../../../../../ui/frameworks/interfaces
-    ../../../../../ui/frameworks/tests/image_decoder/
-    ../../../../../ui/frameworks/tests/image_decoder/assets
+    ../../../../ui/frameworks/interfaces
+    ../../../../ui/frameworks/tests/image_decoder/
+    ../../../../ui/frameworks/tests/image_decoder/assets
 )
 
 # Mirror the HAS_* definitions used by the graphics library so that
