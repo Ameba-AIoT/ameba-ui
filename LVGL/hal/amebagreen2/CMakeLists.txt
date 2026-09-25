@@ -5,6 +5,10 @@ set(public_includes)
 set(public_definitions)
 set(public_libraries)
 
+ameba_list_append(public_includes
+    ../include/common
+)
+
 ameba_global_include(${public_includes})
 ameba_global_define(${public_definitions})
 ameba_global_library(${public_libraries})
@@ -21,30 +25,26 @@ set(private_compile_options)
 # Component private part, user config begin
 
 ameba_list_append(private_sources
-    lv_port.c
+    lv_ameba_jpeg.c
+    lv_draw_ppe.c
+    lv_ameba_hal.c
 )
 
-if(CONFIG_TOUCH_ENABLE)
-    ameba_list_append(private_sources
-        lv_port_touch.c
-    )
-endif()
+ameba_list_append(private_compile_options
+    -Wno-incompatible-pointer-types
+)
 
 ameba_list_append(private_includes
-    .
-    ../lvgl
-    ../hal/include/common
-    ../../../display
-    ../../../input
+    ../include/amebagreen2
+    ../include/common
+    ${c_LVGL_SRC_DIR}
+    ${c_CMPT_FWLIB_DIR}/jpeg_decoder/inc
 )
-
-# drm/core/ is already a global include when CONFIG_DISPLAY_DRM=y
-# (exported by drm/CMakeLists.txt public_includes)
 
 # Component private part, user config end
 #------------------------------#
 
-ameba_add_internal_library(lv_port
+ameba_add_internal_library(lvgl_drivers
     p_SOURCES
         ${private_sources}
     p_INCLUDES
