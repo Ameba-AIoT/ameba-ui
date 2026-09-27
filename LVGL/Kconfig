@@ -18,10 +18,16 @@ menu "Graphics Library Selection"
                 select LIBJPEG_TURBO_ENABLE
                 help
                     Use LVGL 9.3.
+
+            config LVGL_9_5
+                bool "LVGL 9.5"
+                select LIBJPEG_TURBO_ENABLE
+                help
+                    Use LVGL 9.5.
         endchoice
     endif
 
-    if LVGL_9_3
+    if LVGL_9_3 || LVGL_9_5
         config LV_DEMO_ENABLE
             bool "Enable LVGL Demo"
             default n
