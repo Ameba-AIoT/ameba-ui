@@ -20,6 +20,7 @@
 #include "os_wrapper.h"
 
 #include "lvgl.h"
+#include "lvgl_private.h"
 #include "lv_ameba_hal.h"
 #include "lv_port.h"
 
