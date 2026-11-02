@@ -2,7 +2,7 @@
 	path = LVGL/lvgl-9.3/lvgl
 	url = ../../Ameba-AIoT/lvgl.git
 	branch = ameba/v9.3
-[submodule "LVGL/lvgl-8.3/lvgl"]
-	path = LVGL/lvgl-8.3/lvgl
+[submodule "LVGL/lvgl-9.6/lvgl"]
+	path = LVGL/lvgl-9.6/lvgl
 	url = ../../Ameba-AIoT/lvgl.git
-	branch = release/v8.3
+	branch = ameba/v9.6
