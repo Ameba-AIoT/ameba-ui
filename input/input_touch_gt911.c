@@ -30,15 +30,28 @@
 #define INT_PIN                 _PA_31
 #define SDA_PIN                 _PA_29
 #define SCL_PIN                 _PA_30
-#define XSIZE                   480
-#define YSIZE                   480
+
+/* Touch panel orientation, set in Touch Controller Selection; independent of the display panel. */
+#if defined(CONFIG_TOUCH_SWAP_XY)
+#define TRANSFORM_EXCHANGE_X_Y  1
+#else
 #define TRANSFORM_EXCHANGE_X_Y  0
+#endif
+#if defined(CONFIG_TOUCH_INVERT_X)
 #define TRANSFORM_INVERSE_X     1
+#else
+#define TRANSFORM_INVERSE_X     0
+#endif
+#if defined(CONFIG_TOUCH_INVERT_Y)
 #define TRANSFORM_INVERSE_Y     1
+#else
+#define TRANSFORM_INVERSE_Y     0
+#endif
 
 #define GT_CTRL_REG             0X8040
 #define GT_CFGS_REG             0X8047
 #define GT_CHECK_REG            0X80FF
+#define GT_XMAX_REG             0X8048
 #define GT_PID_REG              0X8140
 #define GT_GSTID_REG            0X814E
 #define GT_TP1_REG              0X8150
@@ -90,6 +103,8 @@ static const u8 GT911_CFG_TBL[] =
 struct gt911_data {
     u16 x;
     u16 y;
+    u16 x_max;      // touch range from the chip config, used to invert
+    u16 y_max;
 
     bool initialized;
     bool enabled;
@@ -260,6 +275,14 @@ static int gt911_read_product_info(struct gt911_data *ts)
     RTK_LOGI(LOG_TAG, "%s CTP ID:%x %x %x %x \r\n", __func__,
         iic_read_buf[0], iic_read_buf[1], iic_read_buf[2], iic_read_buf[3]);
 
+    // X/Y output max from the chip config, little endian.
+    u8 range[4] = {0};
+    if (gt911_i2c_read(&ts->client, GT_XMAX_REG, range, sizeof(range)) > 0) {
+        ts->x_max = range[0] | (range[1] << 8);
+        ts->y_max = range[2] | (range[3] << 8);
+    }
+    RTK_LOGI(LOG_TAG, "touch range: %dx%d\r\n", ts->x_max, ts->y_max);
+
     return 0;
 }
 
@@ -322,10 +345,10 @@ err_finish:
         u16 y = (read[4] | (read[5] << 8));
         if (state) {
 #if TRANSFORM_INVERSE_X
-            x = XSIZE - x;
+            x = (x < ts->x_max) ? ts->x_max - 1 - x : 0;
 #endif
 #if TRANSFORM_INVERSE_Y
-            y = YSIZE - y;
+            y = (y < ts->y_max) ? ts->y_max - 1 - y : 0;
 #endif
 #if TRANSFORM_EXCHANGE_X_Y
             ts->x = x;
