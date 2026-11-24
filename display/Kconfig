@@ -19,10 +19,18 @@ menu "Panel Selection"
         config ST7701S_RGB565_MENU
             bool "St7701s_rgb565"
             select ST7701S_RGB565
+            select TOUCH_ENABLE
+            select PANEL_TOUCH_GT911
+            select TOUCH_INVERT_X if TOUCH_GT911
+            select TOUCH_INVERT_Y if TOUCH_GT911
 
         config ST7701P_RGB_MENU
             bool "St7701p_rgb"
             select ST7701P_RGB
+            select TOUCH_ENABLE
+            select PANEL_TOUCH_GT911
+            select TOUCH_INVERT_X if TOUCH_GT911
+            select TOUCH_INVERT_Y if TOUCH_GT911
 
         config HJ3508_12_MENU
             bool "Hj3508_12"
@@ -35,10 +43,14 @@ menu "Panel Selection"
         config T1720A_MENU
             bool "T1720A"
             select T1720A
+            select TOUCH_ENABLE
+            select PANEL_TOUCH_GT911
 
         config JD9165BA_MENU
             bool "JD9165BA"
             select JD9165BA
+            select TOUCH_ENABLE
+            select PANEL_TOUCH_GT911
 
         config AXS15260_MIPI_MENU
             bool "AXS15260_mipi"
@@ -51,6 +63,10 @@ menu "Panel Selection"
             select GH7002
     endchoice
 endmenu
+
+# the panel module comes with a GT911 touch controller
+config PANEL_TOUCH_GT911
+bool
 
 config ST7102_MIPI
 bool
