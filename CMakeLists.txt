@@ -1,6 +1,6 @@
 if (CONFIG_GRAPHIC_UI)
     ameba_add_subdirectories_if(CONFIG_LVGL_ENABLE LVGL)
-    if (CONFIG_AMEBAGREEN2 OR CONFIG_AMEBASMART)
+    if (CONFIG_AMEBAGREEN2 OR CONFIG_AMEBASMART OR CONFIG_AMEBALITE)
         ameba_add_subdirectory_if_exist(display)
     endif ()
     ameba_add_subdirectory_if_exist(input)
