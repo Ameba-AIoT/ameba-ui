@@ -9,6 +9,7 @@ menu "Touch Controller Selection"
     if TOUCH_ENABLE
         choice
             prompt "Select Touch Controller"
+            default TOUCH_GT911_MENU if PANEL_TOUCH_GT911
             default TOUCH_CST328_MENU
             config TOUCH_CST328_MENU
                 bool "CST328"
@@ -26,6 +27,20 @@ menu "Touch Controller Selection"
                 bool "TDDI"
                 select TOUCH_TDDI
         endchoice
+
+        if TOUCH_GT911
+            config TOUCH_SWAP_XY
+                bool "Swap touch X/Y"
+                default n
+                help
+                    Set by how the touch panel is mounted, not by the display panel.
+
+            config TOUCH_INVERT_X
+                bool "Invert touch X"
+
+            config TOUCH_INVERT_Y
+                bool "Invert touch Y"
+        endif
     endif
 endmenu
 

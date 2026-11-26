@@ -53,6 +53,8 @@
 #define SELECTED_PANEL_NAME "axs15260_mipi_540x1260"
 #elif defined(CONFIG_GH7002) && CONFIG_GH7002
 #define SELECTED_PANEL_NAME "gh7002_1024x600"
+#elif defined(CONFIG_ST7789V_SPI_240X320) && CONFIG_ST7789V_SPI_240X320
+#define SELECTED_PANEL_NAME "st7789v_spi_240x320"
 #else
 #define SELECTED_PANEL_NAME "unknown"
 #endif
@@ -117,6 +119,8 @@ void display_mode_pure_color(int32_t color_depth) {
         total_pixels = 540 * 1260;
     } else if (!strcmp(SELECTED_PANEL_NAME, "gh7002_1024x600")) {
         total_pixels = 1024 * 600;
+    } else if (!strcmp(SELECTED_PANEL_NAME, "st7789v_spi_240x320")) {
+        total_pixels = 240 * 320;
     } else {
         RTK_LOGS(LOG_TAG, RTK_LOG_INFO, "unsupported panel\n");
         return;
@@ -184,6 +188,9 @@ bool display_mode_init(int32_t color_depth) {
 
     extern bool panel_gh7002_register(void);
     panel_gh7002_register();
+
+    extern bool panel_st7789v_register(void);
+    panel_st7789v_register();
 
     // 3. list all registered panels.
     panel_list_all();

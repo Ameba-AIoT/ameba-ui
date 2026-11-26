@@ -1,5 +1,5 @@
 # Apps are only supported on chips with a display controller subsystem.
-if(CONFIG_AMEBASMART OR CONFIG_AMEBAGREEN2)
+if(CONFIG_AMEBASMART OR CONFIG_AMEBAGREEN2 OR CONFIG_AMEBALITE)
     if(CONFIG_LV_DEMO_WIDGETS)
         ameba_add_subdirectory(lv_demo_widgets)
     elseif(CONFIG_LV_DEMO_STRESS)
