@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+#include <string.h>
+
 #include "ameba_soc.h"
 
 #include "panel_manager.h"
@@ -22,6 +24,32 @@
 
 // demo board default pinmux
 pin_config_entry_t default_pin_configs[] = {
+    {
+        .panel_name = "st7789v_spi_240x320",
+        .gpio_config = {
+            .status = true,
+            .reset_pin = _PA_21,
+            .cs_pin = _PA_31,
+            .dc_pin = _PA_22,
+            .bl_pin = _PA_23,
+            .power_en_pin = 0xFFFFFFFF
+        },
+        .spi_config = {
+            .status = true,
+            .spi_index = 1,
+            .cs_pin = _PA_31,
+            .sclk_pin = _PA_28,
+            .mosi_pin = _PA_29,
+            .miso_pin = _PA_30
+        },
+        .rgb_data_config = {
+            .status = false,
+        },
+        .rgb_ctrl_config = {
+            .status = false,
+        },
+    },
+#if !defined(CONFIG_AMEBALITE)
     {
         .panel_name = "hj3508_12_rgb_320x480",
         .gpio_config = {
@@ -464,6 +492,7 @@ pin_config_entry_t default_pin_configs[] = {
             .status = false,
         },
     },
+#endif
 };
 
 int32_t default_pin_configs_num = sizeof(default_pin_configs) / sizeof(default_pin_configs[0]);

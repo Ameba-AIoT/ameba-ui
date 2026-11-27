@@ -50,6 +50,8 @@ static inline int32_t display_mode_get_width(void) {
     return 540;
 #elif defined(CONFIG_GH7002) && CONFIG_GH7002
     return 1024;
+#elif defined(CONFIG_ST7789V_SPI_240X320) && CONFIG_ST7789V_SPI_240X320
+    return 240;
 #else
     //RTK_LOGE(LOG_TAG, "Unsupported panel:%ld\n");
     return 0;
@@ -79,6 +81,8 @@ static inline int32_t display_mode_get_height(void) {
     return 1260;
 #elif defined(CONFIG_GH7002) && CONFIG_GH7002
     return 600;
+#elif defined(CONFIG_ST7789V_SPI_240X320) && CONFIG_ST7789V_SPI_240X320
+    return 320;
 #else
     //RTK_LOGE(LOG_TAG, "Unsupported panel:%ld\n");
     return 0;

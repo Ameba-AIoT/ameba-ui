@@ -1,6 +1,7 @@
 menu "Panel Selection"
     choice
         prompt "Select Panel"
+        default ST7789V_SPI_240X320_MENU if AMEBALITE
         default ST7701S_MENU
         config ST7102_MIPI_MENU
             bool "St7102_mipi"
@@ -19,10 +20,18 @@ menu "Panel Selection"
         config ST7701S_RGB565_MENU
             bool "St7701s_rgb565"
             select ST7701S_RGB565
+            select TOUCH_ENABLE
+            select PANEL_TOUCH_GT911
+            select TOUCH_INVERT_X if TOUCH_GT911
+            select TOUCH_INVERT_Y if TOUCH_GT911
 
         config ST7701P_RGB_MENU
             bool "St7701p_rgb"
             select ST7701P_RGB
+            select TOUCH_ENABLE
+            select PANEL_TOUCH_GT911
+            select TOUCH_INVERT_X if TOUCH_GT911
+            select TOUCH_INVERT_Y if TOUCH_GT911
 
         config HJ3508_12_MENU
             bool "Hj3508_12"
@@ -35,10 +44,14 @@ menu "Panel Selection"
         config T1720A_MENU
             bool "T1720A"
             select T1720A
+            select TOUCH_ENABLE
+            select PANEL_TOUCH_GT911
 
         config JD9165BA_MENU
             bool "JD9165BA"
             select JD9165BA
+            select TOUCH_ENABLE
+            select PANEL_TOUCH_GT911
 
         config AXS15260_MIPI_MENU
             bool "AXS15260_mipi"
@@ -49,8 +62,16 @@ menu "Panel Selection"
             select TOUCH_GT9XX
             bool "Gh7002"
             select GH7002
+
+        config ST7789V_SPI_240X320_MENU
+            bool "st7789v_spi_240x320"
+            select ST7789V_SPI_240X320
     endchoice
 endmenu
+
+# the panel module comes with a GT911 touch controller
+config PANEL_TOUCH_GT911
+bool
 
 config ST7102_MIPI
 bool
@@ -83,4 +104,7 @@ config AXS15260_MIPI
 bool
 
 config GH7002
+bool
+
+config ST7789V_SPI_240X320
 bool
