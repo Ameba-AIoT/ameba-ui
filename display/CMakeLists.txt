@@ -52,6 +52,7 @@ ameba_list_append(private_sources
     panels/panel_jd9165ba.c
     panels/panel_axs15260_mipi.c
     panels/panel_gh7002.c
+    panels/panel_st7789v.c
     panels/panel_spi_init.c
     controller/spi/spi_only.c
 )
@@ -66,6 +67,11 @@ ameba_list_append_if(CONFIG_AMEBASMART private_sources
     pal/${c_SOC_TYPE}/panel_pin_setting.c
     controller/${c_SOC_TYPE}/display_controller.c
     controller/mipi/lcdc_mipi.c
+)
+
+ameba_list_append_if(CONFIG_AMEBALITE private_sources
+    pal/${c_SOC_TYPE}/panel_pin_setting.c
+    controller/${c_SOC_TYPE}/display_controller.c
 )
 
 ameba_list_append(private_includes
